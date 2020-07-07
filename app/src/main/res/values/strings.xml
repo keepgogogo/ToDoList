@@ -1,3 +1,9 @@
 <resources>
     <string name="app_name">todolist</string>
+    <string name="nameOfTodayButton">我的一天</string>
+    <string name="nameOfImportantButton">重要</string>
+    <string name="nameOfScheduledPlanButton">已计划日程</string>
+    <string name="nameOfAttributedButton">分配任务</string>
+    <string name="nameOfMissionButton">任务</string>
+
 </resources>

@@ -17,7 +17,7 @@ class TimeHandlerClass implements TimeHandlerInterface {
     /**
      * message.what
      */
-    final static int updateDate=1;
+    private final static int UPDATE_DATE =1;
 
     /**
      * have a threadpool built
@@ -27,16 +27,16 @@ class TimeHandlerClass implements TimeHandlerInterface {
     /**
      * initialization of parameters of ThreadPoolExecutor
      */
-    private final static int corePoolSize=1;
-    private final static int maximumPoolSize=1;
-    private final static long keepAliveTime=0L;
-    private final static int capacityOfBlockingQueue=128;
+    private final static int CORE_POOL_SIZE =1;
+    private final static int MAXIMUM_POOL_SIZE =1;
+    private final static long KEEP_ALIVE_TIME =0L;
+    private final static int CAPACITY_OF_BLOCKING_QUEUE =128;
 
     /**
      * have a single thread built based on a threadpool
      */
-    ExecutorService thread=new ThreadPoolExecutor(corePoolSize,maximumPoolSize,keepAliveTime,
-            TimeUnit.MILLISECONDS,new LinkedBlockingQueue<Runnable>(capacityOfBlockingQueue),
+    private ExecutorService thread=new ThreadPoolExecutor(CORE_POOL_SIZE, MAXIMUM_POOL_SIZE, KEEP_ALIVE_TIME,
+            TimeUnit.MILLISECONDS,new LinkedBlockingQueue<Runnable>(CAPACITY_OF_BLOCKING_QUEUE),
             threadFactory,new ThreadPoolExecutor.AbortPolicy());
 
 
@@ -49,17 +49,19 @@ class TimeHandlerClass implements TimeHandlerInterface {
             @Override
             public void run() {
                 Calendar calendar=Calendar.getInstance();
-                int[] dateForReturn=new int[3];
+                int[] dateForReturn=new int[5];
                 dateForReturn[0]=calendar.get(Calendar.YEAR);
                 dateForReturn[1]=calendar.get(Calendar.MONTH)+1;
                 dateForReturn[2]=calendar.get(Calendar.DAY_OF_MONTH);
+                dateForReturn[3]=calendar.get(Calendar.HOUR_OF_DAY);
+                dateForReturn[4]=calendar.get(Calendar.MINUTE);
 
                 Message message=new Message();
-                message.what=updateDate;
-                message.obj=(Object)dateForReturn;
+                message.what= UPDATE_DATE;
+                message.obj=dateForReturn;
                 handler.sendMessage(message);
-                String TAG="TimeHandlerClass";
-                Log.d(TAG, "run:message has been sent ");
+                String tag ="TimeHandlerClass";
+                Log.d(tag, "run:message has been sent ");
             }
         });
 
