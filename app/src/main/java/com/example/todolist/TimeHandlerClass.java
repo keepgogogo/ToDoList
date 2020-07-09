@@ -49,12 +49,20 @@ class TimeHandlerClass implements TimeHandlerInterface {
             @Override
             public void run() {
                 Calendar calendar=Calendar.getInstance();
-                int[] dateForReturn=new int[5];
+                int[] dateForReturn=new int[3];
+
                 dateForReturn[0]=calendar.get(Calendar.YEAR);
-                dateForReturn[1]=calendar.get(Calendar.MONTH)+1;
-                dateForReturn[2]=calendar.get(Calendar.DAY_OF_MONTH);
-                dateForReturn[3]=calendar.get(Calendar.HOUR_OF_DAY);
-                dateForReturn[4]=calendar.get(Calendar.MINUTE);
+
+                if(calendar.get(Calendar.MONTH)<9)dateForReturn[0]*=10;
+                dateForReturn[0]*=10;
+                dateForReturn[0]+=(calendar.get(Calendar.MONTH)+1);
+
+                if(calendar.get(Calendar.DAY_OF_MONTH)<10)dateForReturn[0]*=10;
+                dateForReturn[0]*=10;
+                dateForReturn[0]+=calendar.get(Calendar.DAY_OF_MONTH);
+
+                dateForReturn[1]=calendar.get(Calendar.HOUR_OF_DAY);
+                dateForReturn[2]=calendar.get(Calendar.MINUTE);
 
                 Message message=new Message();
                 message.what= UPDATE_DATE;
