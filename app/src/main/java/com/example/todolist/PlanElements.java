@@ -1,5 +1,6 @@
 package com.example.todolist;
 
+import androidx.room.ColumnInfo;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 
@@ -16,5 +17,22 @@ import androidx.room.PrimaryKey;
 public class PlanElements {
     @PrimaryKey(autoGenerate = true)
     int planId;
+
+    @ColumnInfo(name = "date_days")
+    int date;
+
+    @ColumnInfo(name = "date_hours")
+    int hour;
+
+    @ColumnInfo(name = "date_mintues")
+    int mintue;
+
+    @ColumnInfo(name = "plan")
+    String plan;
+
+    @ColumnInfo(name = "importance")
+    boolean importance;
+
+//    @ColumnInfo(name = "")
 
 }
