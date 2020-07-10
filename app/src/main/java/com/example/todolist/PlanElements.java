@@ -24,14 +24,14 @@ public class PlanElements {
     @ColumnInfo(name = "date_hours")
     int hour;
 
-    @ColumnInfo(name = "date_mintues")
-    int mintue;
+    @ColumnInfo(name = "date_minutes")
+    int minute;
 
     @ColumnInfo(name = "plan")
     String plan;
 
     @ColumnInfo(name = "importance")
-    boolean importance;
+    int importance;
 
 //    @ColumnInfo(name = "")
 
