@@ -50,4 +50,17 @@ dependencies {
     annotationProcessor 'android.arch.persistence.room:compiler:2.2.5'
     testImplementation "android.arch.persistence.room:testing:$room_version"
 
+
+    def nav_version = "2.3.0-beta01"
+
+    // Java language implementation
+    implementation "androidx.navigation:navigation-fragment:$nav_version"
+    implementation "androidx.navigation:navigation-ui:$nav_version"
+
+    // Dynamic Feature Module Support
+    //implementation "androidx.navigation:navigation-dynamic-features-fragment:$nav_version"
+
+    // Testing Navigation
+    androidTestImplementation "androidx.navigation:navigation-testing:$nav_version"
+
 }
