@@ -1,15 +1,24 @@
 package com.example.todolist;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import com.example.todolist.fragment.AddNewPlanFragment;
+
+import javax.annotation.Nonnull;
 
 /**
  * @author Dust
@@ -21,6 +30,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     final static int UPDATE_DATE =1;
     private static final String TAG ="MAINACTIVITY" ;
+
+
+
 
 
 
@@ -43,6 +55,50 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     }
 
+    //set the menu
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu)
+    {
+        getMenuInflater().inflate(R.menu.menu_of_main_activity,menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(@Nonnull MenuItem item)
+    {
+        switch (item.getItemId())
+        {
+            case R.id.add_new_plan:
+                startFragment(new AddNewPlanFragment(),R.layout.add_plan_fragment);
+                break;
+            default:
+                startFragment(new AddNewPlanFragment(),R.layout.activity_main);
+                break;
+        }
+        return true;
+    }
+
+    /**
+     * start a fragment, 使用需启动的碎片的实例作为参数
+     * @param fragment
+     * @param idOfLayout
+     */
+    private void startFragment(Fragment fragment,int idOfLayout)
+    {
+        FragmentManager fragmentManager=getSupportFragmentManager();
+        FragmentTransaction transaction=fragmentManager.beginTransaction();
+        transaction.replace(idOfLayout,fragment);
+        transaction.commit();
+    }
+
+
+
+
+
+
+
+
+    //Get the date
     private void getDate(TimeManager handler)
     {
         TimeHandlerClass timeHandlerClass=new TimeHandlerClass();
