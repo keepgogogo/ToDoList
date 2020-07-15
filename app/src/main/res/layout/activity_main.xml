@@ -13,12 +13,10 @@
         android:paddingTop="20dp"
         android:gravity="left"/>
 
-    <fragment
+    <FrameLayout
+        android:id="@+id/fragment_container"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-
-        android:id="@+id/add_plan_fragment"
-        android:name="com.example.todolist.fragment.AddNewPlanFragment"/>
+        android:layout_height="match_parent" />
 
 <!--        android:background="@null"/>-->
 
