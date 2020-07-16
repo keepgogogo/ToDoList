@@ -2,7 +2,7 @@ package com.example.todolist;
 
 import android.os.Handler;
 
-interface TimeHandlerInterface {
+interface ThreadHelperClassInterface {
     /**
      * func:Get the date of today and write it into a SharedPreferences file named "NormalData"
      * @param handler used to send message to UI thread
@@ -12,5 +12,5 @@ interface TimeHandlerInterface {
     /**
      * method for TimeHandler formation
      */
-    void timeHandlerClass();
+    void ThreadHelperClass();
 }

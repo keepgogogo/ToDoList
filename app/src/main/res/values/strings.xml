@@ -6,5 +6,6 @@
     <string name="nameOfAttributedButton">分配任务</string>
     <string name="nameOfMissionButton">任务</string>
     <string name="addNewPlan">添加新日程</string>
+    <string name="success">success</string>
 
 </resources>
