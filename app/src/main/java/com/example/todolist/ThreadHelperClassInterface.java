@@ -13,4 +13,10 @@ interface ThreadHelperClassInterface {
      * method for TimeHandler formation
      */
     void ThreadHelperClass();
+
+    void insertPlan(final PlanAddActivity.PlanAddActivityHandler handler,PlanElements planElements,
+                    RoomDatabase roomDatabase,int handler_what);
+
+    void loadAllPlan(final PlanAddActivity.PlanAddActivityHandler handler,final RoomDatabase roomDatabase,
+                     final int handler_what);
 }

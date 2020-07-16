@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:id="@+id/show_old_plan_in_allPlanActivity"
+        android:title="显示过去日程"/>
+
+    <item
+        android:id="@+id/no_old_plan_in_allPlanActivity"
+        android:title="不显示过去日程"/>
+
+    <item
+        android:id="@+id/delete_old_plan_in_allPlanActivity"
+        android:title="删除过去日程"/>
+
+
+
+</menu>

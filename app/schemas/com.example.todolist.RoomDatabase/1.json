@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "ce201f65095ca402ea0c8ee6439b7717",
+    "identityHash": "3a22317ff409360530831dedce159a1f",
     "entities": [
       {
         "tableName": "PlanElements",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`planId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date_days` INTEGER NOT NULL, `date_hours` INTEGER NOT NULL, `date_minutes` INTEGER NOT NULL, `plan` TEXT, `importance` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`planId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date_days` INTEGER NOT NULL, `date_year` INTEGER NOT NULL, `date_month` INTEGER NOT NULL, `date_hours` INTEGER NOT NULL, `date_minutes` INTEGER NOT NULL, `plan` TEXT, `importance` INTEGER NOT NULL)",
         "fields": [
           {
             "fieldPath": "planId",
@@ -15,8 +15,20 @@
             "notNull": true
           },
           {
-            "fieldPath": "date",
+            "fieldPath": "date_days",
             "columnName": "date_days",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "year",
+            "columnName": "date_year",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "month",
+            "columnName": "date_month",
             "affinity": "INTEGER",
             "notNull": true
           },
@@ -57,7 +69,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"ce201f65095ca402ea0c8ee6439b7717\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"3a22317ff409360530831dedce159a1f\")"
     ]
   }
 }

@@ -19,7 +19,13 @@ public class PlanElements {
     int planId;
 
     @ColumnInfo(name = "date_days")
-    int date;
+    int date_days;
+
+    @ColumnInfo(name = "date_year")
+    int year;
+
+    @ColumnInfo(name = "date_month")
+    int month;
 
     @ColumnInfo(name = "date_hours")
     int hour;

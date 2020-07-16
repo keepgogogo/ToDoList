@@ -1,10 +1,11 @@
 package com.example.todolist;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 import android.app.AlertDialog;
 import android.app.DatePickerDialog;
-import android.app.Dialog;
+
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -14,6 +15,8 @@ import android.os.Message;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
+import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
@@ -24,6 +27,9 @@ public class PlanAddActivity extends AppCompatActivity implements View.OnClickLi
 
     final private int RESET_DATE_TextView=1;
     final private int RESET_TIME_TextView=2;
+    final private int RESET_IMPORTANCE_TextView=3;
+    final private int SAVE_THE_PLAN=4;
+    final private int SAVE_PLAN_COMPLETE=5;
 
     Calendar calendar=Calendar.getInstance();
     int year=calendar.get(Calendar.YEAR);
@@ -32,6 +38,9 @@ public class PlanAddActivity extends AppCompatActivity implements View.OnClickLi
 
     private SharedPreferences.Editor spEditor=null;
     private PlanAddActivityHandler planAddActivityHandler=null;
+    private EditText editText;
+    private ProgressBar progressBar;
+    private TextView textViewOfIfImportance;
 
 
 
@@ -43,15 +52,25 @@ public class PlanAddActivity extends AppCompatActivity implements View.OnClickLi
         planAddActivityHandler=new PlanAddActivityHandler();
         setTitle("添加新日程");
 
-        final TextView textViewOfDateSelection=(TextView)findViewById(R.id.TextViewForDateSetIn_PlanAddActivity);
-        final Button buttonOfSetDate=(Button)findViewById(R.id.ButtonForSetDate_PlanAddActivity);
+        final Button buttonOfSetDate=findViewById(R.id.ButtonForSetDate_PlanAddActivity);
         buttonOfSetDate.setOnClickListener(this);
-        final Button buttonOfSetTime=(Button)findViewById(R.id.ButtonForSetTime_PlanAddActivity);
+        final Button buttonOfSetTime=findViewById(R.id.ButtonForSetTime_PlanAddActivity);
         buttonOfSetTime.setOnClickListener(this);
+        final Button buttonOfSetImportance=findViewById(R.id.ButtonForSetImportanceIn_PlanAddActivity);
+        buttonOfSetImportance.setOnClickListener(this);
+        final Button buttonOfTempSavingThePlan=findViewById(R.id.ButtonForTempSaveDetailOfThePlanIn_PlanAddActivity);
+        buttonOfTempSavingThePlan.setOnClickListener(this);
+        final Button buttonOfSaveThePlan=findViewById(R.id.ButtonForSaveTheWholePlanIn_PlanAddActivity);
+        buttonOfSaveThePlan.setOnClickListener(this);
+
+        editText=findViewById(R.id.EditTextForDetailOfThePlanIn_PlanAddActivity);
+        textViewOfIfImportance=findViewById(R.id.TextViewForImportanceSetIn_PlanAddActivity);
+        progressBar=findViewById(R.id.progress_Bar);
+        progressBar.setVisibility(View.GONE);
 
         SharedPreferences sharedPreferences = getSharedPreferences("TempFile", MODE_PRIVATE);
         spEditor=sharedPreferences.edit();
-        spEditor.putBoolean("importance",false);
+        spEditor.putInt("importance",0);
         spEditor.apply();
 
 
@@ -83,6 +102,8 @@ public class PlanAddActivity extends AppCompatActivity implements View.OnClickLi
                     }
                 },year,month-1,day).show();
                 break;
+
+
             case R.id.ButtonForSetTime_PlanAddActivity:
                 new TimePickerDialog(this, new TimePickerDialog.OnTimeSetListener() {
                     @Override
@@ -100,31 +121,111 @@ public class PlanAddActivity extends AppCompatActivity implements View.OnClickLi
 
                     }
                 },calendar.get(Calendar.HOUR_OF_DAY),calendar.get(Calendar.MINUTE),true).show();
-            case R.id.ButtonForSetImportanceIn_PlanAddActivity:
-                AlertDialog.Builder dialog=new AlertDialog.Builder(PlanAddActivity.this);
-                dialog.setTitle("设为重要事项");
-                dialog.setMessage("是否将本事项设为重要事项？");
-                dialog.setCancelable(true);
-                dialog.setPositiveButton("是", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Toast.makeText(PlanAddActivity.this,"已将本事项设为重要事项",
-                                Toast.LENGTH_SHORT).show();
-                        spEditor.putBoolean("importance",true);
-                        spEditor.apply();
-                    }
-                });
-                dialog.setNegativeButton("否", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Toast.makeText(PlanAddActivity.this,"已将本事项设为非重要事项",
-                                Toast.LENGTH_SHORT).show();
-                        spEditor.putBoolean("importance",false);
-                        spEditor.apply();
-                    }
-                });
-                dialog.show();
                 break;
+
+
+            case R.id.ButtonForSetImportanceIn_PlanAddActivity:
+                if("否".equals(textViewOfIfImportance.getText()))
+                {
+                    Toast.makeText(PlanAddActivity.this,"已将本事项设为重要事项",
+                            Toast.LENGTH_SHORT).show();
+                    spEditor.putInt("importance",1);
+                }
+                else
+                {
+                    Toast.makeText(PlanAddActivity.this,"已将本事项设为非重要事项",
+                            Toast.LENGTH_SHORT).show();
+                    spEditor.putInt("importance",0);
+                }
+                spEditor.apply();
+                Message message=new Message();
+                message.what=RESET_IMPORTANCE_TextView;
+                message.obj=getSharedPreferences("TempFile", MODE_PRIVATE).getInt("importance",-1);
+                planAddActivityHandler.sendMessage(message);
+                break;
+
+//                AlertDialog.Builder dialog=new AlertDialog.Builder(PlanAddActivity.this);
+//                dialog.setTitle("设为重要事项");
+//                dialog.setMessage("是否将本事项设为重要事项？");
+//                dialog.setCancelable(true);
+//                dialog.setPositiveButton("是", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialogInterface, int i) {
+//                        Toast.makeText(PlanAddActivity.this,"已将本事项设为重要事项",
+//                                Toast.LENGTH_SHORT).show();
+//                        spEditor.putInt("importance",1);
+//                        spEditor.apply();
+//                    }
+//                });
+//                dialog.setNegativeButton("否", new DialogInterface.OnClickListener() {
+//                    @Override
+//                    public void onClick(DialogInterface dialogInterface, int i) {
+//                        Toast.makeText(PlanAddActivity.this,"已将本事项设为非重要事项",
+//                                Toast.LENGTH_SHORT).show();
+//                        spEditor.putInt("importance",0);
+//                        spEditor.apply();
+//                    }
+//                });
+//                dialog.show();
+//                Message message=new Message();
+//                message.what=RESET_IMPORTANCE_TextView;
+//                message.obj=getSharedPreferences("TempFile", MODE_PRIVATE).getBoolean("importance",false);
+//                planAddActivityHandler.sendMessage(message);
+//                break;
+
+
+            case R.id.ButtonForTempSaveDetailOfThePlanIn_PlanAddActivity:
+                String inputText=editText.getText().toString();
+                spEditor.putString("plan",inputText);
+                spEditor.apply();
+                Toast.makeText(PlanAddActivity.this,"输入成功",Toast.LENGTH_SHORT).show();
+                break;
+
+
+
+            case R.id.ButtonForSaveTheWholePlanIn_PlanAddActivity:
+                PlanElements planElements=new PlanElements();
+                SharedPreferences sharedPreferences=getSharedPreferences("TempFile",MODE_PRIVATE);
+                if(sharedPreferences.getString("plan","null").equals("null"))
+                {
+                    Toast.makeText(PlanAddActivity.this,"日程内容不能为空",Toast.LENGTH_SHORT).show();
+                    break;
+                }
+                planElements.date_days=sharedPreferences.getInt("day",-1);
+                planElements.hour=sharedPreferences.getInt("hour",-1);
+                planElements.minute=sharedPreferences.getInt("minute",-1);
+                planElements.month=sharedPreferences.getInt("month",-1);
+                planElements.year=sharedPreferences.getInt("year",-1);
+                if (planElements.year==-1||planElements.month==-1||planElements.minute==-1
+                        ||planElements.hour==-1||planElements.date_days==-1)
+                {
+                    Toast.makeText(PlanAddActivity.this,"请正确设置时间",Toast.LENGTH_SHORT).show();
+                    break;
+                }
+
+                planElements.importance=sharedPreferences.getInt("importance",-1);
+                planElements.plan=sharedPreferences.getString("plan","null");
+
+                Message planMessage=new Message();
+
+                planMessage.what=SAVE_THE_PLAN;
+                planAddActivityHandler.sendMessage(planMessage);
+
+                RoomDatabase roomDatabase= Room.databaseBuilder(getApplicationContext(),
+                        RoomDatabase.class,"database").build();
+                ThreadHelperClass threadHelper=new ThreadHelperClass();
+                threadHelper.insertPlan(planAddActivityHandler,planElements,roomDatabase,SAVE_PLAN_COMPLETE);
+
+//                PlanElementsDao planElementsDao=roomDatabase.planElementsDao();
+//                planElementsDao.insert(planElements);
+//
+//                planMessage.what=SAVE_PLAN_COMPLETE;
+//                planAddActivityHandler.sendMessage(planMessage);
+                Toast.makeText(PlanAddActivity.this,"新日程添加成功",Toast.LENGTH_SHORT).show();
+                finish();
+                break;
+
+
             default:
                 break;
         }
@@ -132,20 +233,35 @@ public class PlanAddActivity extends AppCompatActivity implements View.OnClickLi
 
     protected class PlanAddActivityHandler extends Handler
     {
-        final private int RESET_DATE_TextView=1;
-        final private int RESET_TIME_TextView=2;
         @Override
         public void handleMessage(Message message)
         {
+            final int RESET_DATE_TextView = 1;
+            final int RESET_TIME_TextView = 2;
+            final int RESET_IMPORTANCE_TextView = 3;
+            final int SAVE_THE_PLAN=4;
+            final int SAVE_PLAN_COMPLETE=5;
             switch (message.what)
             {
                 case RESET_DATE_TextView:
-                    TextView textViewOfDateSelection=(TextView)findViewById(R.id.TextViewForDateSetIn_PlanAddActivity);
+                    TextView textViewOfDateSelection=findViewById(R.id.TextViewForDateSetIn_PlanAddActivity);
                     textViewOfDateSelection.setText((String)message.obj);
                     break;
                 case RESET_TIME_TextView:
-                    TextView textViewOfTimeSelection=(TextView)findViewById(R.id.TextViewForTimeSetIn_PlanAddActivity);
+                    TextView textViewOfTimeSelection=findViewById(R.id.TextViewForTimeSetIn_PlanAddActivity);
                     textViewOfTimeSelection.setText((String)message.obj);
+                    break;
+                case RESET_IMPORTANCE_TextView:
+                    TextView textViewOfImportanceSelection=findViewById(R.id.TextViewForImportanceSetIn_PlanAddActivity);
+                    String output="否";
+                    if((int)message.obj==1)output="是";
+                    textViewOfImportanceSelection.setText(output);
+                    break;
+                case SAVE_THE_PLAN:
+                    progressBar.setVisibility(View.VISIBLE);
+                    break;
+                case SAVE_PLAN_COMPLETE:
+                    progressBar.setVisibility(View.GONE);
                     break;
                 default:
                     break;

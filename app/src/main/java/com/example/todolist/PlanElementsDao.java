@@ -15,8 +15,14 @@ public interface PlanElementsDao {
     @Query("SELECT * FROM PlanElements WHERE planId IN (:planIds)")
     List<PlanElements> loadAllByPlanId(int[] planIds);
 
+    @Query("SELECT * FROM PlanElements WHERE date_year BETWEEN :startOfTimeSelected AND :endOfTimeSelected")
+    List<PlanElements> loadByPlanIdBetweenYear(int startOfTimeSelected,int endOfTimeSelected);
+
+    @Query("SELECT * FROM PlanElements WHERE date_month BETWEEN :startOfTimeSelected AND :endOfTimeSelected")
+    List<PlanElements> loadByPlanIdBetweenMonth(int startOfTimeSelected,int endOfTimeSelected);
+
     @Query("SELECT * FROM PlanElements WHERE date_days BETWEEN :startOfTimeSelected AND :endOfTimeSelected")
-    List<PlanElements> loadByPlanIdBetweenDays(int startOfTimeSelected,int endOfTimeSelected);
+    List<PlanElements> loadByPlanIdBetweenDay(int startOfTimeSelected,int endOfTimeSelected);
 
     @Query("SELECT * FROM PlanElements WHERE importance = 1")
     List<PlanElements> loadByImportance();

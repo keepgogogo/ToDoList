@@ -49,12 +49,13 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/TextViewForTimeSetIn.PlanAddActivity"
-        android:text="是否设为重要事项"
+        android:text="是否设为重要日程"
         android:textSize="20sp"
         android:layout_marginTop="18dp"
         android:id="@+id/ButtonForSetImportanceIn.PlanAddActivity"/>
 
     <TextView
+        android:id="@+id/TextViewForImportanceSetIn.PlanAddActivity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:background="@color/cardview_light_background"
@@ -64,5 +65,44 @@
         android:layout_marginTop="15dp"
         android:layout_marginLeft="10dp"
         android:textSize="20sp"/>
+
+    <TextView
+        android:id="@+id/TextForTips"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/ButtonForSetImportanceIn.PlanAddActivity"
+        android:layout_marginTop="10dp"
+        android:textSize="20sp"
+        android:text="请在下方输入日程内容"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/ButtonForTempSaveDetailOfThePlanIn.PlanAddActivity"
+        android:text="保存日程内容"
+        android:textSize="20sp"
+        android:layout_below="@id/TextViewForImportanceSetIn.PlanAddActivity"
+        android:layout_toEndOf="@id/TextForTips"
+        android:layout_marginTop="10dp"/>
+
+
+    <EditText
+        android:id="@+id/EditTextForDetailOfThePlanIn.PlanAddActivity"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/TextForTips"/>
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/ButtonForSaveTheWholePlanIn.PlanAddActivity"
+        android:layout_below="@id/EditTextForDetailOfThePlanIn.PlanAddActivity"
+        android:text="保存本日程"
+        android:textSize="20sp"/>
+
+    <ProgressBar
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/progress_Bar"/>
 
 </RelativeLayout>

@@ -3,9 +3,12 @@ package com.example.todolist;
 import android.os.Message;
 import android.util.Log;
 
+import androidx.room.Room;
+
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
 import java.util.Calendar;
+import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadFactory;
@@ -27,8 +30,8 @@ class ThreadHelperClass implements ThreadHelperClassInterface {
     /**
      * initialization of parameters of ThreadPoolExecutor
      */
-    private final static int CORE_POOL_SIZE =1;
-    private final static int MAXIMUM_POOL_SIZE =1;
+    private final static int CORE_POOL_SIZE =2;
+    private final static int MAXIMUM_POOL_SIZE =4;
     private final static long KEEP_ALIVE_TIME =0L;
     private final static int CAPACITY_OF_BLOCKING_QUEUE =128;
 
@@ -73,6 +76,44 @@ class ThreadHelperClass implements ThreadHelperClassInterface {
                 Log.d(tag, "run:message has been sent ");
             }
         });
+    }
 
+    @Override
+    public void insertPlan(final PlanAddActivity.PlanAddActivityHandler handler, final PlanElements planElements,
+                           final RoomDatabase roomDatabase,final int handler_what)
+    {
+        thread.execute(new Runnable() {
+            @Override
+            public void run() {
+                PlanElementsDao planElementsDao=roomDatabase.planElementsDao();
+                planElementsDao.insert(planElements);
+
+                Message message=new Message();
+                message.what=handler_what;
+                handler.sendMessage(message);
+//                planMessage.what=SAVE_PLAN_COMPLETE;
+//                planAddActivityHandler.sendMessage(planMessage);
+            }
+        });
+    }
+
+    @Override
+    public void loadAllPlan(final PlanAddActivity.PlanAddActivityHandler handler,final RoomDatabase roomDatabase,
+                            final int handler_what)
+    {
+        thread.execute(new Runnable() {
+            @Override
+            public void run() {
+
+                PlanElementsDao planElementsDao=roomDatabase.planElementsDao();
+                List<PlanElements> planElementsList=planElementsDao.getAll();
+
+                Message message=new Message();
+                message.obj=(Object)planElementsList;
+                message.what=handler_what;
+                handler.sendMessage(message);
+
+            }
+        });
     }
 }
