@@ -1,33 +1,68 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context=".PlanAddActivity">
 
+
+
     <TextView
-        android:id="@+id/success"
+        android:id="@+id/TextViewForDateSetIn.PlanAddActivity"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:layout_marginTop="10dp"
         android:text="@string/success"/>
+
+    <Button
+        android:layout_marginTop="0dp"
+        android:layout_width="wrap_content"
+        android:textSize="20sp"
+        android:layout_toEndOf="@+id/TextViewForDateSetIn.PlanAddActivity"
+        android:layout_height="wrap_content"
+        android:id="@+id/ButtonForSetDate.PlanAddActivity"
+        android:text="@string/setDate" />
+
+    <TextView
+        android:id="@+id/TextViewForTimeSetIn.PlanAddActivity"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="20sp"
+        android:layout_below="@+id/TextViewForDateSetIn.PlanAddActivity"
+        android:layout_gravity=""
+        android:layout_marginTop="18dp"
+        android:text="@string/setTime" />
+
+    <Button
+        android:layout_marginTop="0dp"
+        android:layout_width="wrap_content"
+        android:textSize="20sp"
+        android:layout_below="@+id/ButtonForSetDate.PlanAddActivity"
+        android:layout_toEndOf="@+id/TextViewForTimeSetIn.PlanAddActivity"
+        android:layout_height="wrap_content"
+        android:id="@+id/ButtonForSetTime.PlanAddActivity"
+        android:text="设置时间" />
 
     <Button
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/ButtonForSetDate"
-        android:text="设置日期"
-        android:layout_toRightOf="@+id/success"
+        android:layout_below="@+id/TextViewForTimeSetIn.PlanAddActivity"
+        android:text="是否设为重要事项"
+        android:textSize="20sp"
+        android:layout_marginTop="18dp"
+        android:id="@+id/ButtonForSetImportanceIn.PlanAddActivity"/>
 
-<!--    <DatePicker-->
-<!--        android:id="@+id/DatePicker"-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="327dp" />-->
-
-<!--    <TimePicker-->
-<!--        android:id="@+id/TimePicker"-->
-<!--        android:layout_width="441dp"-->
-<!--        android:layout_height="330dp" />-->
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/cardview_light_background"
+        android:text="否"
+        android:layout_below="@id/ButtonForSetTime.PlanAddActivity"
+        android:layout_toEndOf="@id/ButtonForSetImportanceIn.PlanAddActivity"
+        android:layout_marginTop="15dp"
+        android:layout_marginLeft="10dp"
+        android:textSize="20sp"/>
 
 </RelativeLayout>

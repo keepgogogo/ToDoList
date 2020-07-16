@@ -68,34 +68,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         switch (item.getItemId())
         {
             case R.id.add_new_plan:
-//                Intent intent=new Intent(MainActivity.this,FragmentShowActivity.class);
-//                intent.putExtra("FRAGMENT_TO_START","ADD_NEW_PLAN");
                 Intent intent=new Intent(MainActivity.this,PlanAddActivity.class);
                 startActivity(intent);
-                //startFragment(new AddNewPlanFragment(),R.layout.add_plan_fragment);
                 break;
             default:
-                //startFragment(new AddNewPlanFragment(),R.layout.activity_main);
                 break;
         }
         return true;
     }
-
-    /**
-     * start a fragment, 使用需启动的碎片的实例作为参数
-     * @param fragment
-     * @param idOfLayout
-     */
-    private void startFragment(Fragment fragment,int idOfLayout)
-    {
-        FragmentManager fragmentManager=getSupportFragmentManager();
-        FragmentTransaction transaction=fragmentManager.beginTransaction();
-        transaction.replace(idOfLayout,fragment);
-        transaction.addToBackStack(null);
-        transaction.commit();
-    }
-
-
 
 
     //Get the date
