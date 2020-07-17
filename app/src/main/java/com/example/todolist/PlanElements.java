@@ -39,6 +39,38 @@ public class PlanElements {
     @ColumnInfo(name = "importance")
     int importance;
 
-//    @ColumnInfo(name = "")
+    public int getPlanId() {
+        return planId;
+    }
+
+    public int getDate_days() {
+        return date_days;
+    }
+
+    public int getYear() {
+        return year;
+    }
+
+    public int getMonth() {
+        return month;
+    }
+
+    public int getHour() {
+        return hour;
+    }
+
+    public int getMinute() {
+        return minute;
+    }
+
+    public String getPlan() {
+        return plan;
+    }
+
+    public int getImportance() {
+        return importance;
+    }
+
+    //    @ColumnInfo(name = "")
 
 }

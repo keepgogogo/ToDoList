@@ -6,4 +6,13 @@
     android:layout_height="match_parent"
     tools:context=".MyAllPlanActivity">
 
+    <androidx.recyclerview.widget.RecyclerView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:scrollbars="vertical"
+        android:id="@+id/RecyclerViewIn.MyAllPlanActivity"
+        tools:listitem="@layout/show_all_plan_recycler_view"
+        />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
