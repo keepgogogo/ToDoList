@@ -70,6 +70,7 @@ public class PlanAddActivity extends AppCompatActivity implements View.OnClickLi
 
         SharedPreferences sharedPreferences = getSharedPreferences("TempFile", MODE_PRIVATE);
         spEditor=sharedPreferences.edit();
+        spEditor.clear();
         spEditor.putInt("importance",0);
         spEditor.apply();
 
@@ -144,36 +145,6 @@ public class PlanAddActivity extends AppCompatActivity implements View.OnClickLi
                 planAddActivityHandler.sendMessage(message);
                 break;
 
-//                AlertDialog.Builder dialog=new AlertDialog.Builder(PlanAddActivity.this);
-//                dialog.setTitle("设为重要事项");
-//                dialog.setMessage("是否将本事项设为重要事项？");
-//                dialog.setCancelable(true);
-//                dialog.setPositiveButton("是", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialogInterface, int i) {
-//                        Toast.makeText(PlanAddActivity.this,"已将本事项设为重要事项",
-//                                Toast.LENGTH_SHORT).show();
-//                        spEditor.putInt("importance",1);
-//                        spEditor.apply();
-//                    }
-//                });
-//                dialog.setNegativeButton("否", new DialogInterface.OnClickListener() {
-//                    @Override
-//                    public void onClick(DialogInterface dialogInterface, int i) {
-//                        Toast.makeText(PlanAddActivity.this,"已将本事项设为非重要事项",
-//                                Toast.LENGTH_SHORT).show();
-//                        spEditor.putInt("importance",0);
-//                        spEditor.apply();
-//                    }
-//                });
-//                dialog.show();
-//                Message message=new Message();
-//                message.what=RESET_IMPORTANCE_TextView;
-//                message.obj=getSharedPreferences("TempFile", MODE_PRIVATE).getBoolean("importance",false);
-//                planAddActivityHandler.sendMessage(message);
-//                break;
-
-
             case R.id.ButtonForTempSaveDetailOfThePlanIn_PlanAddActivity:
                 String inputText=editText.getText().toString();
                 spEditor.putString("plan",inputText);
@@ -211,6 +182,8 @@ public class PlanAddActivity extends AppCompatActivity implements View.OnClickLi
                 planMessage.what=SAVE_THE_PLAN;
                 planAddActivityHandler.sendMessage(planMessage);
 
+                planElements.date_all_in=getDetailDate(planElements);
+
                 RoomDatabase roomDatabase= Room.databaseBuilder(getApplicationContext(),
                         RoomDatabase.class,"database").build();
                 ThreadHelperClass threadHelper=new ThreadHelperClass();
@@ -229,6 +202,17 @@ public class PlanAddActivity extends AppCompatActivity implements View.OnClickLi
             default:
                 break;
         }
+
+
+    }
+
+    private int getDetailDate(PlanElements planElements)
+    {
+        int backData=planElements.year;
+        backData=backData*100+planElements.month;
+        backData=backData*100+planElements.date_days;
+
+        return backData;
     }
 
     protected class PlanAddActivityHandler extends Handler

@@ -24,6 +24,9 @@ public interface PlanElementsDao {
     @Query("SELECT * FROM PlanElements WHERE date_days BETWEEN :startOfTimeSelected AND :endOfTimeSelected")
     List<PlanElements> loadByPlanIdBetweenDay(int startOfTimeSelected,int endOfTimeSelected);
 
+    @Query("SELECT * FROM PlanElements WHERE date_all_in >= :today")
+    List<PlanElements> loadByDateAllInTodayAndAfter(int today);
+
     @Query("SELECT * FROM PlanElements WHERE importance = 1")
     List<PlanElements> loadByImportance();
 
@@ -32,4 +35,10 @@ public interface PlanElementsDao {
 
     @Delete
     void delete(PlanElements planElements);
+
+    @Delete
+    void deleteByGroup(PlanElements ... planElements);
+
+    @Query("DELETE FROM PlanElements")
+    void deleteAll();
 }

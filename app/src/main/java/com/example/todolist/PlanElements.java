@@ -14,62 +14,65 @@ import androidx.room.PrimaryKey;
  */
 
 @Entity(tableName = "PlanElements")
-public class PlanElements {
+public class PlanElements{
     @PrimaryKey(autoGenerate = true)
-    int planId;
+    public int planId;
 
     @ColumnInfo(name = "date_days")
-    int date_days;
+    public int date_days;
 
     @ColumnInfo(name = "date_year")
-    int year;
+    public int year;
 
     @ColumnInfo(name = "date_month")
-    int month;
+    public int month;
 
     @ColumnInfo(name = "date_hours")
-    int hour;
+    public int hour;
 
     @ColumnInfo(name = "date_minutes")
-    int minute;
+    public int minute;
+
+    @ColumnInfo(name = "date_all_in")
+    public int date_all_in;
 
     @ColumnInfo(name = "plan")
-    String plan;
+    public String plan;
 
     @ColumnInfo(name = "importance")
-    int importance;
+    public int importance;
 
-    public int getPlanId() {
-        return planId;
-    }
-
-    public int getDate_days() {
-        return date_days;
-    }
-
-    public int getYear() {
-        return year;
-    }
-
-    public int getMonth() {
-        return month;
-    }
-
-    public int getHour() {
-        return hour;
-    }
-
-    public int getMinute() {
-        return minute;
-    }
-
-    public String getPlan() {
-        return plan;
-    }
-
-    public int getImportance() {
-        return importance;
-    }
+//    public int getPlanId() {
+//        return planId;
+//    }
+//
+//    public int getDate_days() {
+//        return date_days;
+//    }
+//
+//    public int getYear() {
+//        return year;
+//    }
+//
+//    public int getMonth() {
+//        return month;
+//    }
+//
+//    public int getHour() {
+//        return hour;
+//    }
+//
+//    public int getMinute() {
+//        return minute;
+//    }
+//
+//    public String getPlan() {
+//        return plan;
+//    }
+//
+//    public int getImportance() {
+//        return importance;
+//    }
 
     //    @ColumnInfo(name = "")
 

@@ -33,10 +33,17 @@ public class PlanShowRecyclerAdapter extends RecyclerView.Adapter<PlanShowRecycl
     @Override
     public void onBindViewHolder(PlanShowRecyclerViewHolder holder,int position)
     {
-        String timeOutput=getItemDataFromDataBase(position);
-        holder.timeTextView.setText(timeOutput);
 
-        String importanceOutput=
+        holder.timeTextView.setText(getItemDataFromDataBase(position,0));
+        holder.importanceTextView.setText(getItemDataFromDataBase(position,1));
+        holder.planDetailTextView.setText(getItemDataFromDataBase(position,2));
+
+    }
+
+    @Override
+    public int getItemCount()
+    {
+        return mDataSet.length;
     }
 
     public String getItemDataFromDataBase(int position,int statement)
@@ -49,21 +56,26 @@ public class PlanShowRecyclerAdapter extends RecyclerView.Adapter<PlanShowRecycl
         switch (statement)
         {
             case GET_TIME:
-                stringBuilder.append(elements.getYear());
+                stringBuilder.delete(0,stringBuilder.length()+1);
+                stringBuilder.append(elements.year);
                 stringBuilder.append("\\");
-                stringBuilder.append(elements.getMonth());
+                stringBuilder.append(elements.month);
                 stringBuilder.append("\\");
-                stringBuilder.append(elements.getDate_days());
+                stringBuilder.append(elements.date_days);
                 stringBuilder.append("  ");
-                stringBuilder.append(elements.getHour());
+                stringBuilder.append(elements.hour);
                 stringBuilder.append(":");
-                stringBuilder.append(elements.getMinute());
+                if(elements.minute<10)stringBuilder.append("0");
+                stringBuilder.append(elements.minute);
                 break;
             case GET_IMPORTANCE:
-                if (1==elements.getImportance())stringBuilder.append("重要事项");
+                stringBuilder.delete(0,stringBuilder.length()+1);
+                if (1==elements.importance)stringBuilder.append("重要事项");
                 else stringBuilder.append("非重要事项");
                 break;
             case GET_PLAN_DETAIL:
+                stringBuilder.delete(0,stringBuilder.length()+1);
+                stringBuilder.append(elements.plan);
                 break;
             default:
                 break;
@@ -73,6 +85,7 @@ public class PlanShowRecyclerAdapter extends RecyclerView.Adapter<PlanShowRecycl
 
     public static class PlanShowRecyclerViewHolder extends RecyclerView.ViewHolder
     {
+        public TextView planDetailTextView;
         public TextView importanceTextView;
         public TextView timeTextView;
         public CardView cardView;
@@ -82,6 +95,7 @@ public class PlanShowRecyclerAdapter extends RecyclerView.Adapter<PlanShowRecycl
             cardView=itemView.findViewById(R.id.show_all_plan_recycler_card_view);
             timeTextView=itemView.findViewById(R.id.TextViewForRecyclerIn_ShowAllActivity);
             importanceTextView=itemView.findViewById(R.id.TextViewForRecyclerImportanceIn_ShowAllActivity);
+            planDetailTextView=itemView.findViewById(R.id.TextViewForRecyclerPlanDetailIn_ShowAllActivity);
         }
     }
 }

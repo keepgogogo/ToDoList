@@ -51,6 +51,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Button button=findViewById(R.id.buttonForToday);
         button.setOnClickListener(this);
+        Button button1=findViewById(R.id.buttonForStartMyAllPlanActivityIn_MainActivity);
+        button1.setOnClickListener(this);
+
         Log.d(TAG, "Button was working");
 
     }
@@ -101,6 +104,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 Toast.makeText(MainActivity.this,stringBuilder.toString(),Toast.LENGTH_SHORT).show();
                 //Log.d(TAG, "onClick: end"+stringBuilder.toString());
                 break;
+            case R.id.buttonForStartMyAllPlanActivityIn_MainActivity:
+                Intent intent=new Intent(MainActivity.this,MyAllPlanActivity.class);;
+                startActivity(intent);
+                break;
             default:
                 break;
         }
@@ -136,6 +143,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     preferencesEditor.putInt("YEAR",date[YEAR]);
                     preferencesEditor.putInt("MONTH",date[MONTH]);
                     preferencesEditor.putInt("DAY",date[DAY]);
+
+                    int detailDate=date[YEAR];
+                    detailDate=detailDate*100+date[MONTH];
+                    detailDate=detailDate*100+date[DAY];
+
+                    preferencesEditor.putInt("DETAIL_DATE",detailDate);
+
                     preferencesEditor.apply();
                     Log.d(TAG, "handleMessage: SharedPreference has been set");
                     break;

@@ -13,7 +13,18 @@
         android:paddingTop="20dp"
         android:gravity="left"/>
 
-<!--    <FrameLayout-->
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/buttonForStartMyAllPlanActivityIn.MainActivity"
+        android:text="我的全部日程"
+        android:textSize="20sp"
+        android:paddingLeft="20dp"
+        android:paddingTop="20dp"
+        android:gravity="left"/>
+
+
+    <!--    <FrameLayout-->
 <!--        android:id="@+id/fragment_container"-->
 <!--        android:layout_width="match_parent"-->
 <!--        android:layout_height="match_parent" />-->

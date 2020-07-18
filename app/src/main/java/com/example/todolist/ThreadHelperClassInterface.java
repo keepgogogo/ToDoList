@@ -17,6 +17,9 @@ interface ThreadHelperClassInterface {
     void insertPlan(final PlanAddActivity.PlanAddActivityHandler handler,PlanElements planElements,
                     RoomDatabase roomDatabase,int handler_what);
 
-    void loadAllPlan(final PlanAddActivity.PlanAddActivityHandler handler,final RoomDatabase roomDatabase,
+    void loadAllPlan(final MyAllPlanActivity.MyAllPlanActivityHandler handler, final RoomDatabase roomDatabase,
                      final int handler_what);
+
+    void deletePlan(final RoomDatabase roomDatabase,final MyAllPlanActivity.MyAllPlanActivityHandler handler,
+                    final int handler_what,final PlanElements ... planElements);
 }

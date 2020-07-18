@@ -30,8 +30,8 @@ class ThreadHelperClass implements ThreadHelperClassInterface {
     /**
      * initialization of parameters of ThreadPoolExecutor
      */
-    private final static int CORE_POOL_SIZE =2;
-    private final static int MAXIMUM_POOL_SIZE =4;
+    private final static int CORE_POOL_SIZE =1;
+    private final static int MAXIMUM_POOL_SIZE =1;
     private final static long KEEP_ALIVE_TIME =0L;
     private final static int CAPACITY_OF_BLOCKING_QUEUE =128;
 
@@ -98,7 +98,7 @@ class ThreadHelperClass implements ThreadHelperClassInterface {
     }
 
     @Override
-    public void loadAllPlan(final PlanAddActivity.PlanAddActivityHandler handler,final RoomDatabase roomDatabase,
+    public void loadAllPlan(final MyAllPlanActivity.MyAllPlanActivityHandler handler, final RoomDatabase roomDatabase,
                             final int handler_what)
     {
         thread.execute(new Runnable() {
@@ -112,6 +112,23 @@ class ThreadHelperClass implements ThreadHelperClassInterface {
                 message.obj=(Object)planElementsList;
                 message.what=handler_what;
                 handler.sendMessage(message);
+
+            }
+        });
+    }
+
+
+
+    public void deletePlan(final RoomDatabase roomDatabase,final MyAllPlanActivity.MyAllPlanActivityHandler handler,
+                           final int handler_what,final PlanElements ... planElements)
+    {
+        thread.execute(new Runnable() {
+            @Override
+            public void run() {
+                PlanElementsDao planElementsDao=roomDatabase.planElementsDao();
+                planElementsDao.deleteByGroup(planElements);
+                Message message=new Message();
+                message.what=handler_what;
 
             }
         });
