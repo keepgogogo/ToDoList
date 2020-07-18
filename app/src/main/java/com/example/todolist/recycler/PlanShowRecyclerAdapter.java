@@ -1,30 +1,53 @@
 package com.example.todolist.recycler;
 
+import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.todolist.MyAllPlanActivity;
 import com.example.todolist.PlanElements;
 import com.example.todolist.R;
+import com.example.todolist.RoomDatabase;
+import com.example.todolist.ThreadHelperClass;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 public class PlanShowRecyclerAdapter
         extends RecyclerView.Adapter<PlanShowRecyclerAdapter.PlanShowRecyclerViewHolder>
-        /*implements RecyclerSwipeAndDrag*/{
+        implements RecyclerSwipeAndDrag{
 
     private PlanElements[] mDataSet;
+    private Context context;
+    private RoomDatabase roomDatabase;
+    private ThreadHelperClass threadHelper;
+    private MyAllPlanActivity.MyAllPlanActivityHandler handler;
+
+    public void setHandler(MyAllPlanActivity.MyAllPlanActivityHandler handler){this.handler=handler;}
+
+    public void setRoomDatabase(RoomDatabase database){roomDatabase=database;}
+
+    public void setThreadHelper(ThreadHelperClass threadHelper){this.threadHelper=threadHelper;}
+
+    public void setContext(Context context){this.context=context;}
+
+    public PlanShowRecyclerAdapter(){}
 
     public PlanShowRecyclerAdapter(PlanElements[] mDataSet)
     {
         this.mDataSet=mDataSet;
     }
+
+    public void setMDataSet(PlanElements[] dataSet){mDataSet=dataSet;}
 
     @Override
     public PlanShowRecyclerAdapter.PlanShowRecyclerViewHolder onCreateViewHolder(ViewGroup parent,int viewType)
@@ -104,18 +127,42 @@ public class PlanShowRecyclerAdapter
     }
 
 
-//    @Override
-//    public void onItemSwap(int fromPosition, int toPosition) {
-//        Collections.swap(mDataSet,fromPosition,toPosition);
-//    }
-//
-//    @Override
-//    public void onItemDelete(int position) {
-//
-//    }
-//
-//    @Override
-//    public void onItemImportance(int position) {
-//
-//    }
+    @Override
+    public void onItemSwap(int fromPosition, int toPosition) {
+        ArrayList<PlanElements> list= new ArrayList<>();
+        Collections.addAll(list, mDataSet);
+        Collections.swap((List<PlanElements>)list,fromPosition,toPosition);
+        mDataSet=list.toArray(new PlanElements[0]);
+        notifyItemMoved(fromPosition,toPosition);
+
+    }
+
+    @Override
+    public void onItemDelete(int position) {
+        Toast.makeText(context,"删除",Toast.LENGTH_SHORT).show();
+        ArrayList<PlanElements> list= new ArrayList<>();
+        Collections.addAll(list, mDataSet);
+
+        threadHelper.deletePlan(roomDatabase,list.get(position));
+        threadHelper.loadAllPlan(handler,roomDatabase,0);
+
+        list.remove(position);
+        mDataSet=list.toArray(new PlanElements[0]);
+        notifyItemRemoved(position);
+    }
+
+    @Override
+    public void onItemDone(int position) {
+        Toast.makeText(context,"日程已完成",Toast.LENGTH_SHORT).show();
+        ArrayList<PlanElements> list= new ArrayList<>();
+        Collections.addAll(list, mDataSet);
+
+        threadHelper.deletePlan(roomDatabase,list.get(position));
+        threadHelper.loadAllPlan(handler,roomDatabase,0);
+
+        list.remove(position);
+        mDataSet=list.toArray(new PlanElements[0]);
+        notifyItemRemoved(position);
+
+    }
 }

@@ -21,4 +21,9 @@ interface ThreadHelperClassInterface {
                      final int handler_what);
 
     void deletePlan(final RoomDatabase roomDatabase,final PlanElements ... planElements);
+
+    void loadTodayPlan(final MyAllPlanActivity.MyAllPlanActivityHandler handler,
+                       final RoomDatabase roomDatabase,
+                       final int handler_what,
+                       final int dateOfToday);
 }

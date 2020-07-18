@@ -17,6 +17,7 @@ import android.os.Message;
 import android.view.Menu;
 import android.view.MenuItem;
 
+import com.example.todolist.recycler.DragSwipeCallBack;
 import com.example.todolist.recycler.PlanShowRecyclerAdapter;
 import com.example.todolist.recycler.PlanShowRecyclerViewModel;
 
@@ -30,13 +31,14 @@ import javax.annotation.Nonnull;
 public class MyAllPlanActivity extends AppCompatActivity {
 
     private RecyclerView recyclerView;
-    private RecyclerView.Adapter adapter;
+    private PlanShowRecyclerAdapter adapter;
     private RecyclerView.LayoutManager layoutManager;
     private MyAllPlanActivityHandler handler=new MyAllPlanActivityHandler();
     private PlanShowRecyclerViewModel viewModel;
     private ItemTouchHelper itemTouchHelper;
 
     final int LOAD_ALL_PLAN_NO_LIMIT=0;
+    final int LOAD_TODAY_PLAN=2;
 
     List<PlanElements> listOfAllPlanElement;
     ThreadHelperClass threadHelper=new ThreadHelperClass();;
@@ -53,14 +55,22 @@ public class MyAllPlanActivity extends AppCompatActivity {
         setTitle("所有日程");
         preferences=getSharedPreferences("NormalData",MODE_PRIVATE);
 
+        roomDatabase= Room.databaseBuilder(getApplicationContext(),
+
+                RoomDatabase.class,"database").build();
         viewModel=new ViewModelProvider(this).get(PlanShowRecyclerViewModel.class);
+        adapter=new PlanShowRecyclerAdapter();
+        adapter.setContext(this);
+        adapter.setRoomDatabase(roomDatabase);
+        adapter.setThreadHelper(threadHelper);
+        adapter.setHandler(handler);
 
         final Observer<List<PlanElements>> planElementsObserver= new Observer<List<PlanElements>>() {
             @Override
             public void onChanged(List<PlanElements> planElements) {
                 PlanElements[] dataForAdapter=new PlanElements[planElements.size()];
                 for(int i=0;i<planElements.size();i++)dataForAdapter[i]=planElements.get(i);
-                adapter=new PlanShowRecyclerAdapter(dataForAdapter);
+                adapter.setMDataSet(dataForAdapter);
                 recyclerView.setAdapter(adapter);
             }
         };
@@ -73,8 +83,8 @@ public class MyAllPlanActivity extends AppCompatActivity {
         layoutManager=new LinearLayoutManager(this);
         recyclerView.setLayoutManager(layoutManager);
 
-        roomDatabase= Room.databaseBuilder(getApplicationContext(),
-                RoomDatabase.class,"database").build();
+
+
 
         threadHelper.loadAllPlan(handler,roomDatabase,LOAD_ALL_PLAN_NO_LIMIT);
 
@@ -82,7 +92,9 @@ public class MyAllPlanActivity extends AppCompatActivity {
         handler.setOperator(operator);
 
 
-//        itemTouchHelper=new ItemTouchHelper()
+        DragSwipeCallBack callBack=new DragSwipeCallBack(adapter);
+        ItemTouchHelper itemTouchHelper=new ItemTouchHelper(callBack);
+        itemTouchHelper.attachToRecyclerView(recyclerView);
     }
 
     //set the menu
@@ -104,6 +116,12 @@ public class MyAllPlanActivity extends AppCompatActivity {
         operator.setPreferences(preferences);
         switch (item.getItemId())
         {
+            case R.id.show_today_plan_in_allPlanActivity:
+
+                threadHelper.loadTodayPlan(handler,roomDatabase,LOAD_TODAY_PLAN,
+                        preferences.getInt("DETAIL_DATE",0));
+                break;
+
             case R.id.show_all_plan_in_allPlanActivity:
 
                 setView(listOfAllPlanElement);
@@ -146,9 +164,11 @@ public class MyAllPlanActivity extends AppCompatActivity {
     /**
      * Handler收到message后处理
      */
-    protected class MyAllPlanActivityHandler extends Handler
+    public class MyAllPlanActivityHandler extends Handler
     {
         final int LOAD_ALL_PLAN_NO_LIMIT=0;
+        final int UPDATE_LIST_OF_PLAN=1;
+        final int LOAD_TODAY_PLAN=2;
         @Override
         public void handleMessage(@NotNull Message message)
         {
@@ -160,11 +180,17 @@ public class MyAllPlanActivity extends AppCompatActivity {
 //                    for(int i=0;i<listOfData.size();i++)dataForAdapter[i]=listOfData.get(i);
 //                    adapter=new PlanShowRecyclerAdapter(dataForAdapter);
 //                    recyclerView.setAdapter(adapter);
-                    viewModel.getCurrentData().setValue(listOfData);
+                    setView(listOfData);
 
                     //仅在此处对 listOfAllPlanElement 修改
                     listOfAllPlanElement=listOfData;
                     operator.setElementsList(listOfAllPlanElement);
+                    break;
+                case UPDATE_LIST_OF_PLAN:
+                    threadHelper.loadAllPlan(handler,roomDatabase,LOAD_ALL_PLAN_NO_LIMIT);
+                    break;
+                case LOAD_TODAY_PLAN:
+                    setView((List<PlanElements>)message.obj);
                     break;
             }
         }

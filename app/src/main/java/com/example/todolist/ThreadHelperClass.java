@@ -15,7 +15,7 @@ import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
-class ThreadHelperClass implements ThreadHelperClassInterface {
+public class ThreadHelperClass implements ThreadHelperClassInterface {
 
     /**
      * message.what
@@ -117,6 +117,27 @@ class ThreadHelperClass implements ThreadHelperClassInterface {
         });
     }
 
+    @Override
+    public void loadTodayPlan(final MyAllPlanActivity.MyAllPlanActivityHandler handler,
+                              final RoomDatabase roomDatabase,
+                              final int handler_what,
+                              final int dateOfToday)
+    {
+        thread.execute(new Runnable() {
+            @Override
+            public void run() {
+
+                PlanElementsDao planElementsDao=roomDatabase.planElementsDao();
+                List<PlanElements> planElementsList=planElementsDao.loadByDateAllInToday(dateOfToday);
+
+                Message message=new Message();
+                message.obj=(Object)planElementsList;
+                message.what=handler_what;
+                handler.sendMessage(message);
+            }
+        });
+    }
+
 
 
     public void deletePlan(final RoomDatabase roomDatabase,final PlanElements ... planElements)
@@ -126,6 +147,20 @@ class ThreadHelperClass implements ThreadHelperClassInterface {
             public void run() {
                 PlanElementsDao planElementsDao=roomDatabase.planElementsDao();
                 planElementsDao.deleteByGroup(planElements);
+            }
+        });
+    }
+
+    public void updateListOfPlan(final MyAllPlanActivity.MyAllPlanActivityHandler handler)
+    {
+        thread.execute(new Runnable() {
+            @Override
+            public void run() {
+                int updateListOfPlan=1;
+                Message message=new Message();
+                message.what=updateListOfPlan;
+
+                handler.sendMessage(message);
             }
         });
     }

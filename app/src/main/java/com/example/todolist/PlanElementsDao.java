@@ -27,6 +27,9 @@ public interface PlanElementsDao {
     @Query("SELECT * FROM PlanElements WHERE date_all_in >= :today")
     List<PlanElements> loadByDateAllInTodayAndAfter(int today);
 
+    @Query("SELECT * FROM PlanElements WHERE date_all_in = :today")
+    List<PlanElements> loadByDateAllInToday(int today);
+
     @Query("SELECT * FROM PlanElements WHERE importance = 1")
     List<PlanElements> loadByImportance();
 

@@ -6,6 +6,6 @@ public interface RecyclerSwipeAndDrag {
 
     void onItemDelete(int position);
 
-    void onItemImportance(int position);
+    void onItemDone(int position);
 
 }

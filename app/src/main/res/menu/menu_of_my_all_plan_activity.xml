@@ -2,6 +2,10 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
+        android:id="@+id/show_today_plan_in_allPlanActivity"
+        android:title="今天的日程"/>
+
+    <item
         android:id="@+id/show_old_plan_in_allPlanActivity"
         android:title="显示过去日程"/>
 
