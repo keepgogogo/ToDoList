@@ -1,8 +1,10 @@
 package com.example.todolist;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.ItemTouchHelper;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.room.Room;
@@ -32,9 +34,9 @@ public class MyAllPlanActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private MyAllPlanActivityHandler handler=new MyAllPlanActivityHandler();
     private PlanShowRecyclerViewModel viewModel;
+    private ItemTouchHelper itemTouchHelper;
 
     final int LOAD_ALL_PLAN_NO_LIMIT=0;
-    final int UPDATE_ALL_PLAN=1;
 
     List<PlanElements> listOfAllPlanElement;
     ThreadHelperClass threadHelper=new ThreadHelperClass();;
@@ -52,6 +54,7 @@ public class MyAllPlanActivity extends AppCompatActivity {
         preferences=getSharedPreferences("NormalData",MODE_PRIVATE);
 
         viewModel=new ViewModelProvider(this).get(PlanShowRecyclerViewModel.class);
+
         final Observer<List<PlanElements>> planElementsObserver= new Observer<List<PlanElements>>() {
             @Override
             public void onChanged(List<PlanElements> planElements) {
@@ -61,6 +64,7 @@ public class MyAllPlanActivity extends AppCompatActivity {
                 recyclerView.setAdapter(adapter);
             }
         };
+
         viewModel.getCurrentData().observe(this,planElementsObserver);
 
         recyclerView=(RecyclerView)findViewById(R.id.RecyclerViewIn_MyAllPlanActivity);
@@ -76,6 +80,9 @@ public class MyAllPlanActivity extends AppCompatActivity {
 
         operator=new ListOfPlanElementsOperator();
         handler.setOperator(operator);
+
+
+//        itemTouchHelper=new ItemTouchHelper()
     }
 
     //set the menu
@@ -86,6 +93,11 @@ public class MyAllPlanActivity extends AppCompatActivity {
         return true;
     }
 
+    /**
+     * 右上角菜单点击事件
+     * @param item
+     * @return
+     */
     @Override
     public boolean onOptionsItemSelected(@Nonnull MenuItem item)
     {
@@ -107,7 +119,7 @@ public class MyAllPlanActivity extends AppCompatActivity {
                 setView(operator.rangeWithoutOldPlan());
                 List<PlanElements> elementsToBeDelete=operator.rangeOnlyOldPlan();
                 PlanElements[] elementsTobeCancel= elementsToBeDelete.toArray(new PlanElements[0]);
-                threadHelper.deletePlan(roomDatabase,handler,UPDATE_ALL_PLAN,elementsTobeCancel);
+                threadHelper.deletePlan(roomDatabase,elementsTobeCancel);
                 threadHelper.loadAllPlan(handler,roomDatabase,LOAD_ALL_PLAN_NO_LIMIT);
                 break;
             case R.id.show_old_plan_in_allPlanActivity:
@@ -121,7 +133,7 @@ public class MyAllPlanActivity extends AppCompatActivity {
 
                 PlanElements[] allPlanElement=new PlanElements[listOfAllPlanElement.size()];
                 listOfAllPlanElement.toArray(allPlanElement);
-                threadHelper.deletePlan(roomDatabase, handler, UPDATE_ALL_PLAN, allPlanElement);
+                threadHelper.deletePlan(roomDatabase, allPlanElement);
                 threadHelper.loadAllPlan(handler,roomDatabase,LOAD_ALL_PLAN_NO_LIMIT);
                 break;
             default:
@@ -131,10 +143,12 @@ public class MyAllPlanActivity extends AppCompatActivity {
     }
 
 
+    /**
+     * Handler收到message后处理
+     */
     protected class MyAllPlanActivityHandler extends Handler
     {
         final int LOAD_ALL_PLAN_NO_LIMIT=0;
-        final int UPDATE_ALL_PLAN=1;
         @Override
         public void handleMessage(@NotNull Message message)
         {
@@ -152,10 +166,6 @@ public class MyAllPlanActivity extends AppCompatActivity {
                     listOfAllPlanElement=listOfData;
                     operator.setElementsList(listOfAllPlanElement);
                     break;
-                case UPDATE_ALL_PLAN:
-                    listOfAllPlanElement=(List<PlanElements>)message.obj;
-                    operator.setElementsList(listOfAllPlanElement);
-                    break;
             }
         }
 
@@ -164,8 +174,18 @@ public class MyAllPlanActivity extends AppCompatActivity {
         public void setOperator(ListOfPlanElementsOperator operator){this.operator=operator;}
     }
 
+    /**
+     * 传入集合，viewModel设置UI
+     * @param list
+     */
     public void setView(List<PlanElements> list)
     {
         viewModel.getCurrentData().setValue(list);
     }
+
+
+    /**
+     * 以下为拖拽...
+     * itemTouchHelper内容
+     */
 }

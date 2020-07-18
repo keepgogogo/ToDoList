@@ -12,8 +12,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.example.todolist.PlanElements;
 import com.example.todolist.R;
 
-public class PlanShowRecyclerAdapter extends RecyclerView.Adapter<PlanShowRecyclerAdapter
-        .PlanShowRecyclerViewHolder> {
+import java.util.Collection;
+import java.util.Collections;
+
+public class PlanShowRecyclerAdapter
+        extends RecyclerView.Adapter<PlanShowRecyclerAdapter.PlanShowRecyclerViewHolder>
+        /*implements RecyclerSwipeAndDrag*/{
 
     private PlanElements[] mDataSet;
 
@@ -98,4 +102,20 @@ public class PlanShowRecyclerAdapter extends RecyclerView.Adapter<PlanShowRecycl
             planDetailTextView=itemView.findViewById(R.id.TextViewForRecyclerPlanDetailIn_ShowAllActivity);
         }
     }
+
+
+//    @Override
+//    public void onItemSwap(int fromPosition, int toPosition) {
+//        Collections.swap(mDataSet,fromPosition,toPosition);
+//    }
+//
+//    @Override
+//    public void onItemDelete(int position) {
+//
+//    }
+//
+//    @Override
+//    public void onItemImportance(int position) {
+//
+//    }
 }

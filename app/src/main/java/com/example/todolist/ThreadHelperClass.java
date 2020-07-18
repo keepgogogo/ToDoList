@@ -119,17 +119,13 @@ class ThreadHelperClass implements ThreadHelperClassInterface {
 
 
 
-    public void deletePlan(final RoomDatabase roomDatabase,final MyAllPlanActivity.MyAllPlanActivityHandler handler,
-                           final int handler_what,final PlanElements ... planElements)
+    public void deletePlan(final RoomDatabase roomDatabase,final PlanElements ... planElements)
     {
         thread.execute(new Runnable() {
             @Override
             public void run() {
                 PlanElementsDao planElementsDao=roomDatabase.planElementsDao();
                 planElementsDao.deleteByGroup(planElements);
-                Message message=new Message();
-                message.what=handler_what;
-
             }
         });
     }
