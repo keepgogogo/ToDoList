@@ -35,7 +35,6 @@ public class MyAllPlanActivity extends AppCompatActivity {
     private RecyclerView.LayoutManager layoutManager;
     private MyAllPlanActivityHandler handler=new MyAllPlanActivityHandler();
     private PlanShowRecyclerViewModel viewModel;
-    private ItemTouchHelper itemTouchHelper;
 
     final int LOAD_ALL_PLAN_NO_LIMIT=0;
     final int LOAD_TODAY_PLAN=2;
@@ -210,8 +209,5 @@ public class MyAllPlanActivity extends AppCompatActivity {
     }
 
 
-    /**
-     * 以下为拖拽...
-     * itemTouchHelper内容
-     */
+
 }

@@ -57,16 +57,6 @@ public class ThreadHelperClass implements ThreadHelperClassInterface {
                 dateForReturn[0]=calendar.get(Calendar.YEAR);
                 dateForReturn[1]=calendar.get(Calendar.MONTH)+1;
                 dateForReturn[2]=calendar.get(Calendar.DAY_OF_MONTH);
-//                if(calendar.get(Calendar.MONTH)<9)dateForReturn[0]*=10;
-//                dateForReturn[0]*=10;
-//                dateForReturn[0]+=(calendar.get(Calendar.MONTH)+1);
-//
-//                if(calendar.get(Calendar.DAY_OF_MONTH)<10)dateForReturn[0]*=10;
-//                dateForReturn[0]*=10;
-//                dateForReturn[0]+=calendar.get(Calendar.DAY_OF_MONTH);
-//
-//                dateForReturn[1]=calendar.get(Calendar.HOUR_OF_DAY);
-//                dateForReturn[2]=calendar.get(Calendar.MINUTE);
 
                 Message message=new Message();
                 message.what= UPDATE_DATE;
@@ -91,8 +81,7 @@ public class ThreadHelperClass implements ThreadHelperClassInterface {
                 Message message=new Message();
                 message.what=handler_what;
                 handler.sendMessage(message);
-//                planMessage.what=SAVE_PLAN_COMPLETE;
-//                planAddActivityHandler.sendMessage(planMessage);
+
             }
         });
     }
