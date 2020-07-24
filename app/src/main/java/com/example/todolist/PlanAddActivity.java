@@ -8,19 +8,24 @@ import android.app.DatePickerDialog;
 
 import android.app.TimePickerDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.AlarmClock;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ProgressBar;
+import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import java.text.ParseException;
 import java.util.Calendar;
 
 public class PlanAddActivity extends AppCompatActivity implements View.OnClickListener{
@@ -30,6 +35,7 @@ public class PlanAddActivity extends AppCompatActivity implements View.OnClickLi
     final private int RESET_IMPORTANCE_TextView=3;
     final private int SAVE_THE_PLAN=4;
     final private int SAVE_PLAN_COMPLETE=5;
+    final private int SET_ALARM_SUCCESS=6;
 
     Calendar calendar=Calendar.getInstance();
     int year=calendar.get(Calendar.YEAR);
@@ -41,7 +47,6 @@ public class PlanAddActivity extends AppCompatActivity implements View.OnClickLi
     private EditText editText;
     private ProgressBar progressBar;
     private TextView textViewOfIfImportance;
-
 
 
 
@@ -63,6 +68,9 @@ public class PlanAddActivity extends AppCompatActivity implements View.OnClickLi
         final Button buttonOfSaveThePlan=findViewById(R.id.ButtonForSaveTheWholePlanIn_PlanAddActivity);
         buttonOfSaveThePlan.setOnClickListener(this);
 
+        final Switch switchForAlarm=findViewById(R.id.SwitchForAlarm);
+
+
         editText=findViewById(R.id.EditTextForDetailOfThePlanIn_PlanAddActivity);
         textViewOfIfImportance=findViewById(R.id.TextViewForImportanceSetIn_PlanAddActivity);
         progressBar=findViewById(R.id.progress_Bar);
@@ -72,9 +80,22 @@ public class PlanAddActivity extends AppCompatActivity implements View.OnClickLi
         spEditor=sharedPreferences.edit();
         spEditor.clear();
         spEditor.putInt("importance",0);
+        spEditor.putBoolean("alarm",false);
         spEditor.apply();
 
-
+        switchForAlarm.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    if(b)
+                    {
+                        spEditor.putBoolean("alarm",true);
+                    }
+                    else
+                    {
+                        spEditor.putBoolean("alarm",false);
+                    }
+            }
+        });
     }
 
 
@@ -194,6 +215,19 @@ public class PlanAddActivity extends AppCompatActivity implements View.OnClickLi
 //
 //                planMessage.what=SAVE_PLAN_COMPLETE;
 //                planAddActivityHandler.sendMessage(planMessage);
+
+                if(sharedPreferences.getBoolean("alarm",false))
+                {
+                    try {
+                        threadHelper.setAlarm(planElements,planAddActivityHandler,SET_ALARM_SUCCESS,this);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
+                }
+
+
+
+
                 Toast.makeText(PlanAddActivity.this,"新日程添加成功",Toast.LENGTH_SHORT).show();
                 finish();
                 break;
@@ -217,14 +251,11 @@ public class PlanAddActivity extends AppCompatActivity implements View.OnClickLi
 
     protected class PlanAddActivityHandler extends Handler
     {
+
         @Override
         public void handleMessage(Message message)
         {
-            final int RESET_DATE_TextView = 1;
-            final int RESET_TIME_TextView = 2;
-            final int RESET_IMPORTANCE_TextView = 3;
-            final int SAVE_THE_PLAN=4;
-            final int SAVE_PLAN_COMPLETE=5;
+
             switch (message.what)
             {
                 case RESET_DATE_TextView:

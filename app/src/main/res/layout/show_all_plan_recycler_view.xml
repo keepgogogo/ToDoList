@@ -36,6 +36,16 @@
             android:layout_marginStart="3dp"
             android:textSize="22sp"/>
 
+        <TextView
+            android:id="@+id/TextViewForRecyclerWeatherIn.ShowAllActivity"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/TextViewForRecyclerPlanDetailIn.ShowAllActivity"
+            android:layout_marginStart="3dp"
+            android:layout_marginTop="3dp"
+            android:textColor="#2196F3"
+            android:textSize="22sp" />
+
 
 
     </RelativeLayout>

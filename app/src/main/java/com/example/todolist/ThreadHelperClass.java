@@ -1,12 +1,12 @@
 package com.example.todolist;
 
+import android.content.Context;
 import android.os.Message;
 import android.util.Log;
 
-import androidx.room.Room;
-
 import com.google.common.util.concurrent.ThreadFactoryBuilder;
 
+import java.text.ParseException;
 import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.ExecutorService;
@@ -87,6 +87,25 @@ public class ThreadHelperClass implements ThreadHelperClassInterface {
     }
 
     @Override
+    public void insertPlan(final MyAllPlanActivity.MyAllPlanActivityHandler handler,
+                           final RoomDatabase roomDatabase, final int handler_what, final PlanElements ... planElements)
+    {
+        thread.execute(new Runnable() {
+            @Override
+            public void run() {
+                PlanElementsDao planElementsDao=roomDatabase.planElementsDao();
+                planElementsDao.insert(planElements);
+
+                Message message=new Message();
+                message.what=handler_what;
+                handler.sendMessage(message);
+
+            }
+        });
+    }
+
+
+    @Override
     public void loadAllPlan(final MyAllPlanActivity.MyAllPlanActivityHandler handler, final RoomDatabase roomDatabase,
                             final int handler_what)
     {
@@ -148,9 +167,20 @@ public class ThreadHelperClass implements ThreadHelperClassInterface {
                 int updateListOfPlan=1;
                 Message message=new Message();
                 message.what=updateListOfPlan;
-
                 handler.sendMessage(message);
             }
         });
+    }
+
+    public void setAlarm(PlanElements planElements,
+                         PlanAddActivity.PlanAddActivityHandler handler,
+                         int handler_what,
+                         Context context) throws ParseException {
+        CalendarReminderUtils reminderUtils=new CalendarReminderUtils();
+        reminderUtils.addPlanInCalender(context, planElements);
+
+        Message message=new Message();
+        message.what=handler_what;
+        handler.sendMessage(message);
     }
 }

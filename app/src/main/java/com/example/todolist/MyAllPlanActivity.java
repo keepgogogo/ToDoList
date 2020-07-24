@@ -37,6 +37,7 @@ public class MyAllPlanActivity extends AppCompatActivity {
     private PlanShowRecyclerViewModel viewModel;
 
     final int LOAD_ALL_PLAN_NO_LIMIT=0;
+    final int UPDATE_LIST_OF_PLAN=1;
     final int LOAD_TODAY_PLAN=2;
 
     List<PlanElements> listOfAllPlanElement;
@@ -83,8 +84,6 @@ public class MyAllPlanActivity extends AppCompatActivity {
         recyclerView.setLayoutManager(layoutManager);
 
 
-
-
         threadHelper.loadAllPlan(handler,roomDatabase,LOAD_ALL_PLAN_NO_LIMIT);
 
         operator=new ListOfPlanElementsOperator();
@@ -115,6 +114,14 @@ public class MyAllPlanActivity extends AppCompatActivity {
         operator.setPreferences(preferences);
         switch (item.getItemId())
         {
+            case R.id.show_all_plan_by_time_in_allPlanActivity:
+                listOfAllPlanElement=operator.rangeByDateFromFuture(listOfAllPlanElement);
+                setView(listOfAllPlanElement);
+                threadHelper.deletePlan(roomDatabase,listOfAllPlanElement.toArray(new PlanElements[0]));
+                threadHelper.insertPlan(handler, roomDatabase,
+                        UPDATE_LIST_OF_PLAN,
+                        listOfAllPlanElement.toArray(new PlanElements[0]));
+                break;
             case R.id.show_today_plan_in_allPlanActivity:
 
                 threadHelper.loadTodayPlan(handler,roomDatabase,LOAD_TODAY_PLAN,
@@ -175,12 +182,7 @@ public class MyAllPlanActivity extends AppCompatActivity {
             {
                 case LOAD_ALL_PLAN_NO_LIMIT:
                     List<PlanElements> listOfData=(List<PlanElements>)message.obj;
-//                    PlanElements[] dataForAdapter=new PlanElements[listOfData.size()];
-//                    for(int i=0;i<listOfData.size();i++)dataForAdapter[i]=listOfData.get(i);
-//                    adapter=new PlanShowRecyclerAdapter(dataForAdapter);
-//                    recyclerView.setAdapter(adapter);
                     setView(listOfData);
-
                     //仅在此处对 listOfAllPlanElement 修改
                     listOfAllPlanElement=listOfData;
                     operator.setElementsList(listOfAllPlanElement);

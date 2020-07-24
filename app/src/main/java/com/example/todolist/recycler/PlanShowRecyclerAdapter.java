@@ -18,7 +18,6 @@ import com.example.todolist.RoomDatabase;
 import com.example.todolist.ThreadHelperClass;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 

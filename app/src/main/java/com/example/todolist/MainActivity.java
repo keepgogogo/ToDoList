@@ -1,12 +1,12 @@
 package com.example.todolist;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -16,6 +16,11 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 
 import javax.annotation.Nonnull;
 
@@ -28,6 +33,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      *  message.what Date
      */
     final static int UPDATE_DATE =1;
+    final static int UPDATE_WEATHER=2;
     private static final String TAG ="MAINACTIVITY" ;
 
 
@@ -47,6 +53,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //get date of today
         TimeManager handler=new TimeManager();
         handler.setPreferencesEditor(preferencesEditor);
+
+        //如果是第一次打开应用，显示提示
+        if (firstOrNot(preferences))promptShow();
+
+
         getDate(handler);
 
         Button button=findViewById(R.id.buttonForToday);
@@ -79,6 +90,79 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
         }
         return true;
+    }
+
+    /**
+     * 检查是否是第一次打开app，以决定是否显示新手提示
+     */
+    private boolean firstOrNot(SharedPreferences preferences)
+    {
+        int defValue=-1;
+        int firstCheck=preferences.getInt("firstOrNot",defValue);
+        boolean state=(defValue==firstCheck);
+        if(state) {
+            SharedPreferences.Editor editor = getSharedPreferences("history", MODE_PRIVATE).edit();
+            editor.putInt("firstOrNot", 1);
+            editor.apply();
+        }
+        return state;
+    }
+
+    /**
+     * 显示注意事项
+     */
+    private void promptShow()
+    {
+
+        AlertDialog.Builder dialog=new AlertDialog.Builder(MainActivity.this);
+        dialog.setTitle("提示");
+        AssetManager assetManager=getAssets();
+        dialog.setMessage(textFileGet("promptMessage.txt",assetManager));
+        dialog.setCancelable(false);
+        dialog.setPositiveButton("同意", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                TimeManager handler=new TimeManager();
+                Message message=new Message();
+                message.what=UPDATE_WEATHER;
+                handler.sendMessage(message);
+            }
+        });
+
+        dialog.setNegativeButton("不同意", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+
+            }
+        });
+
+
+        dialog.show();
+    }
+
+    /**
+     * 读取assets文件夹中文件的内容
+     * @param fileName
+     * @param assetManager
+     * @return
+     */
+    public String textFileGet(String fileName,AssetManager assetManager)
+    {
+        StringBuilder message=new StringBuilder();
+
+        try {
+            InputStream promptMessage=assetManager.open(fileName);
+            BufferedReader reader=new BufferedReader(new InputStreamReader(promptMessage));
+            String line="";
+            while((line=reader.readLine())!=null)
+            {
+                message.append(line);
+                message.append('\n');
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return message.toString();
     }
 
 
@@ -153,6 +237,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     preferencesEditor.apply();
                     Log.d(TAG, "handleMessage: SharedPreference has been set");
                     break;
+                case UPDATE_WEATHER:
+                    WeatherGetter weatherGetter=new WeatherGetter();
+                    weatherGetter.getWeather();
                 default:
                     break;
             }

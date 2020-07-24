@@ -6,6 +6,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.List;
@@ -54,6 +55,27 @@ public class ListOfPlanElementsOperator {
     public List<PlanElements> rangeWithoutPlan()
     {
         return (List<PlanElements>)(new ArrayList<PlanElements>());
+    }
+
+    public List<PlanElements> rangeByDateFromFuture(List<PlanElements> elementsList)
+    {
+        PlanElements[] arrayOfPlan=elementsList.toArray(new PlanElements[0]);
+        for(int i=0;i<arrayOfPlan.length;i++)
+        {
+            for(int m=0;m<arrayOfPlan.length-1;m++)
+            {
+                if(arrayOfPlan[m].date_all_in<=arrayOfPlan[m+1].date_all_in)
+                {
+                    PlanElements temp;
+
+                    temp=arrayOfPlan[m];
+                    arrayOfPlan[m]=arrayOfPlan[m+1];
+                    arrayOfPlan[m+1]=temp;
+
+                }
+            }
+        }
+        return new ArrayList<>(Arrays.asList(arrayOfPlan));
     }
 
 }

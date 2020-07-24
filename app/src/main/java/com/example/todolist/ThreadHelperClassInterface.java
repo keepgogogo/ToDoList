@@ -26,4 +26,7 @@ interface ThreadHelperClassInterface {
                        final RoomDatabase roomDatabase,
                        final int handler_what,
                        final int dateOfToday);
+
+    void insertPlan(final MyAllPlanActivity.MyAllPlanActivityHandler handler,
+                    final RoomDatabase roomDatabase, final int handler_what, final PlanElements ... planElements);
 }

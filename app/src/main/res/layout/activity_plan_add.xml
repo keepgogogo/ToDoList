@@ -100,9 +100,18 @@
         android:text="保存本日程"
         android:textSize="20sp"/>
 
+    <Switch
+        android:id="@+id/SwitchForAlarm"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/ButtonForSaveTheWholePlanIn.PlanAddActivity"
+        android:text="添加日程提醒"
+        android:textSize="20sp"/>
+
+
     <ProgressBar
+        android:id="@+id/progress_Bar"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:id="@+id/progress_Bar"/>
+        android:layout_height="match_parent" />
 
 </RelativeLayout>
