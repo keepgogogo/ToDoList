@@ -2,6 +2,7 @@ package com.example.todolist;
 
 import androidx.room.ColumnInfo;
 import androidx.room.Entity;
+import androidx.room.Ignore;
 import androidx.room.PrimaryKey;
 
 /**
@@ -41,5 +42,11 @@ public class PlanElements{
 
     @ColumnInfo(name = "importance")
     public int importance;
+
+    @Ignore
+    public String weather;
+
+    @Ignore
+    public String temperature;
 
 }

@@ -1,11 +1,15 @@
 package com.example.todolist;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.AssetManager;
 import android.os.Bundle;
 import android.os.Handler;
@@ -17,10 +21,24 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.amap.api.location.AMapLocation;
+import com.amap.api.location.AMapLocationClient;
+import com.amap.api.location.AMapLocationClientOption;
+import com.amap.api.location.AMapLocationListener;
+import com.amap.api.services.weather.LocalDayWeatherForecast;
+import com.amap.api.services.weather.LocalWeatherForecast;
+import com.amap.api.services.weather.LocalWeatherForecastResult;
+import com.amap.api.services.weather.LocalWeatherLive;
+import com.amap.api.services.weather.LocalWeatherLiveResult;
+import com.amap.api.services.weather.WeatherSearch;
+import com.amap.api.services.weather.WeatherSearchQuery;
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.annotation.Nonnull;
 
@@ -34,9 +52,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
      */
     final static int UPDATE_DATE =1;
     final static int UPDATE_WEATHER=2;
+    final static int WRITE_LOCATION=3;
+    final static int WRITE_WEATHER=4;
+    final static int WRITE_WEATHER_FORECAST=5;
+
     private static final String TAG ="MAINACTIVITY" ;
-
-
 
 
 
@@ -142,9 +162,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     /**
      * 读取assets文件夹中文件的内容
-     * @param fileName
-     * @param assetManager
-     * @return
+     * @param fileName name of the file
+     * @param assetManager assets manager
+     * @return string of file
      */
     public String textFileGet(String fileName,AssetManager assetManager)
     {
@@ -153,7 +173,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         try {
             InputStream promptMessage=assetManager.open(fileName);
             BufferedReader reader=new BufferedReader(new InputStreamReader(promptMessage));
-            String line="";
+            String line;
             while((line=reader.readLine())!=null)
             {
                 message.append(line);
@@ -189,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 //Log.d(TAG, "onClick: end"+stringBuilder.toString());
                 break;
             case R.id.buttonForStartMyAllPlanActivityIn_MainActivity:
-                Intent intent=new Intent(MainActivity.this,MyAllPlanActivity.class);;
+                Intent intent=new Intent(MainActivity.this,MyAllPlanActivity.class);
                 startActivity(intent);
                 break;
             default:
@@ -198,12 +218,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
 
+
+
+
     /**
      * build a Handler to process data from get date thread
      * It was built as a inner class of MainActivity
      */
 
-    protected static class TimeManager extends Handler{
+    protected class TimeManager extends Handler{
 
         final static int YEAR =0;
         final static int MONTH =1;
@@ -238,12 +261,204 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     Log.d(TAG, "handleMessage: SharedPreference has been set");
                     break;
                 case UPDATE_WEATHER:
-                    WeatherGetter weatherGetter=new WeatherGetter();
-                    weatherGetter.getWeather();
+                    getPermission();
+                    getLocation();
+                    getWeather();
+                    break;
+
+                case WRITE_LOCATION:
+                    String[] location=(String[])msg.obj;
+                    preferencesEditor.putString("province",location[0]);
+                    preferencesEditor.putString("city",location[1]);
+                    preferencesEditor.putString("district",location[2]);
+                    preferencesEditor.apply();
+                    break;
+
+                case WRITE_WEATHER:
+                    String[] weather=(String[])msg.obj;
+                    preferencesEditor.putString("TodayWeather",weather[0]);
+                    preferencesEditor.putString("TodayTemperature",weather[1]);
+                    preferencesEditor.apply();
+                    break;
+
+                case WRITE_WEATHER_FORECAST:
+                    String[] weatherForecast=(String[])msg.obj;
+                    preferencesEditor.putString("tomorrowDayWeather",weatherForecast[0]);
+                    preferencesEditor.putString("tomorrowNightWeather",weatherForecast[1]);
+                    preferencesEditor.putString("tomorrowDayTemperature",weatherForecast[2]);
+                    preferencesEditor.putString("tomorrowNightTemperature",weatherForecast[3]);
+                    preferencesEditor.apply();
+                    break;
                 default:
                     break;
             }
         }
     }
 
+    public void getWeather()
+    {
+        SharedPreferences preferences=getSharedPreferences("NormalData",MODE_PRIVATE);
+        WeatherSearchQuery mQuery=new WeatherSearchQuery(preferences.getString("city"," "),
+                WeatherSearchQuery.WEATHER_TYPE_LIVE);
+
+        WeatherSearch mWeatherSearch=new WeatherSearch(MainActivity.this);
+        mWeatherSearch.setOnWeatherSearchListener(new WeatherSearch.OnWeatherSearchListener() {
+            @Override
+            public void onWeatherLiveSearched(LocalWeatherLiveResult localWeatherLiveResult, int i) {
+                LocalWeatherLive liveResult=localWeatherLiveResult.getLiveResult();
+                String[] weather=new String[2];
+                weather[0]=liveResult.getWeather();
+                weather[1]=liveResult.getTemperature();
+
+                TimeManager handler=new TimeManager();
+                Message message=new Message();
+                message.what=WRITE_WEATHER;
+                message.obj=weather;
+                handler.sendMessage(message);
+            }
+
+            @Override
+            public void onWeatherForecastSearched(LocalWeatherForecastResult localWeatherForecastResult, int i) {
+                LocalWeatherForecast forecastResult=localWeatherForecastResult.getForecastResult();
+                List<LocalDayWeatherForecast> listOfWeatherForecast=forecastResult.getWeatherForecast();
+                LocalDayWeatherForecast forecast=listOfWeatherForecast.get(0);
+                ArrayList<String> weatherData=new ArrayList<>();
+                weatherData.add(forecast.getDayWeather());
+                weatherData.add(forecast.getNightWeather());
+                weatherData.add(forecast.getDayTemp());
+                weatherData.add(forecast.getNightTemp());
+
+                TimeManager handler=new TimeManager();
+                Message message=new Message();
+                message.what=WRITE_WEATHER_FORECAST;
+                message.obj=weatherData.toArray(new String[0]);
+                handler.sendMessage(message);
+            }
+        });
+
+        mWeatherSearch.setQuery(mQuery);
+        mWeatherSearch.searchWeatherAsyn();
+
+        mQuery=new WeatherSearchQuery(preferences.getString("city"," "),
+                WeatherSearchQuery.WEATHER_TYPE_FORECAST);
+        mWeatherSearch.setQuery(mQuery);
+        mWeatherSearch.searchWeatherAsyn();
+    }
+
+    public void getLocation()
+    {
+        AMapLocationClient mLocationClient=new AMapLocationClient(MainActivity.this);
+        AMapLocationClientOption mLocationOption=new AMapLocationClientOption();
+        AMapLocationListener mLocationListener=new MyAMapLocationListener();
+
+        mLocationClient.setLocationListener(mLocationListener);
+
+        mLocationOption.setLocationMode(AMapLocationClientOption.AMapLocationMode.Battery_Saving);
+        mLocationOption.setOnceLocation(true);
+        mLocationOption.setNeedAddress(true);
+        mLocationOption.setMockEnable(false);
+        mLocationOption.setLocationCacheEnable(false);
+
+        mLocationClient.setLocationOption(mLocationOption);
+        mLocationClient.stopLocation();
+        mLocationClient.startLocation();
+
+
+    }
+
+    public class MyAMapLocationListener implements AMapLocationListener
+    {
+        public String province;
+        public String city;
+        public String district;
+
+        public TimeManager handler=new TimeManager();
+
+
+
+        public void onLocationChanged(AMapLocation aMapLocation){
+            if (aMapLocation != null) {
+                if (aMapLocation.getErrorCode() == 0) {
+                    //此处获得成功，可以参照返回值表取需要的参数，我只要了省市县
+                    Log.e("位置：", aMapLocation.getAddress());
+                    province = aMapLocation.getProvince();
+                    city = aMapLocation.getCity();
+                    district = aMapLocation.getDistrict();
+
+                    Message message=new Message();
+                    String[] obj=new String[3];
+                    obj[0]=province;
+                    obj[1]=city;
+                    obj[2]=district;
+                    message.obj=obj;
+                    message.what=WRITE_LOCATION;
+                    handler.sendMessage(message);
+
+                } else {
+                    //定位失败时，可通过ErrCode（错误码）信息来确定失败的原因，errInfo是错误信息，详见错误码表。
+                    Log.e("AmapError", "location Error, ErrCode:"
+                            + aMapLocation.getErrorCode() + ", errInfo:"
+                            + aMapLocation.getErrorInfo());
+                }
+            }
+        }
+    }
+
+
+    /**
+     * 动态获取网络、定位等权限
+     */
+    public void getPermission()
+    {
+        //获取网络权限
+        if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.
+                permission.INTERNET)!= PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.INTERNET},1);
+        }
+
+        //获取网络状态
+        if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.
+                permission.ACCESS_NETWORK_STATE)!= PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.ACCESS_NETWORK_STATE},1);
+        }
+
+        //获取WIFI网络信息
+        if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.
+                permission.ACCESS_WIFI_STATE)!= PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.ACCESS_WIFI_STATE},1);
+        }
+
+        //获取粗略位置
+        if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.
+                permission.ACCESS_COARSE_LOCATION)!= PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.ACCESS_COARSE_LOCATION},1);
+        }
+
+        //获取位置
+        if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.
+                permission.ACCESS_FINE_LOCATION)!= PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.ACCESS_FINE_LOCATION},1);
+        }
+
+        //获取A-GPS位置
+        if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.
+                permission.ACCESS_LOCATION_EXTRA_COMMANDS)!= PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.ACCESS_LOCATION_EXTRA_COMMANDS},1);
+        }
+
+
+
+    }
 }

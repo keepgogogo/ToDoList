@@ -68,6 +68,21 @@ public class ThreadHelperClass implements ThreadHelperClassInterface {
         });
     }
 
+    //获取定位
+    public void getLocation()
+    {
+
+    }
+
+
+
+
+
+
+
+
+
+
     @Override
     public void insertPlan(final PlanAddActivity.PlanAddActivityHandler handler, final PlanElements planElements,
                            final RoomDatabase roomDatabase,final int handler_what)
