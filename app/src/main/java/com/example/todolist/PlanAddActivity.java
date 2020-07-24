@@ -197,6 +197,8 @@ public class PlanAddActivity extends AppCompatActivity implements View.OnClickLi
 
                 planElements.importance=sharedPreferences.getInt("importance",-1);
                 planElements.plan=sharedPreferences.getString("plan","null");
+                planElements.temperature=" ";
+                planElements.weather=" ";
 
                 Message planMessage=new Message();
 
@@ -219,7 +221,8 @@ public class PlanAddActivity extends AppCompatActivity implements View.OnClickLi
                 if(sharedPreferences.getBoolean("alarm",false))
                 {
                     try {
-                        threadHelper.setAlarm(planElements,planAddActivityHandler,SET_ALARM_SUCCESS,this);
+                        threadHelper.setAlarm(planElements,planAddActivityHandler,SET_ALARM_SUCCESS,
+                                PlanAddActivity.this);
                     } catch (ParseException e) {
                         e.printStackTrace();
                     }

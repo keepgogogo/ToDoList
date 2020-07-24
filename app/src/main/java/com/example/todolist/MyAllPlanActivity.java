@@ -87,12 +87,14 @@ public class MyAllPlanActivity extends AppCompatActivity {
         threadHelper.loadAllPlan(handler,roomDatabase,LOAD_ALL_PLAN_NO_LIMIT);
 
         operator=new ListOfPlanElementsOperator();
+        operator.setPreferences(preferences);
         handler.setOperator(operator);
 
 
         DragSwipeCallBack callBack=new DragSwipeCallBack(adapter);
         ItemTouchHelper itemTouchHelper=new ItemTouchHelper(callBack);
         itemTouchHelper.attachToRecyclerView(recyclerView);
+
     }
 
     //set the menu
@@ -111,16 +113,16 @@ public class MyAllPlanActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(@Nonnull MenuItem item)
     {
-        operator.setPreferences(preferences);
+
         switch (item.getItemId())
         {
             case R.id.show_all_plan_by_time_in_allPlanActivity:
                 listOfAllPlanElement=operator.rangeByDateFromFuture(listOfAllPlanElement);
                 setView(listOfAllPlanElement);
-                threadHelper.deletePlan(roomDatabase,listOfAllPlanElement.toArray(new PlanElements[0]));
-                threadHelper.insertPlan(handler, roomDatabase,
-                        UPDATE_LIST_OF_PLAN,
-                        listOfAllPlanElement.toArray(new PlanElements[0]));
+//                threadHelper.deletePlan(roomDatabase,listOfAllPlanElement.toArray(new PlanElements[0]));
+//                threadHelper.insertPlan(handler, roomDatabase,
+//                        UPDATE_LIST_OF_PLAN,
+//                        listOfAllPlanElement.toArray(new PlanElements[0]));
                 break;
             case R.id.show_today_plan_in_allPlanActivity:
 
@@ -182,6 +184,7 @@ public class MyAllPlanActivity extends AppCompatActivity {
             {
                 case LOAD_ALL_PLAN_NO_LIMIT:
                     List<PlanElements> listOfData=(List<PlanElements>)message.obj;
+                    listOfData=operator.weatherWriteIn(listOfData);
                     setView(listOfData);
                     //仅在此处对 listOfAllPlanElement 修改
                     listOfAllPlanElement=listOfData;
@@ -191,7 +194,7 @@ public class MyAllPlanActivity extends AppCompatActivity {
                     threadHelper.loadAllPlan(handler,roomDatabase,LOAD_ALL_PLAN_NO_LIMIT);
                     break;
                 case LOAD_TODAY_PLAN:
-                    setView((List<PlanElements>)message.obj);
+                    setView(operator.weatherWriteIn((List<PlanElements>)message.obj));
                     break;
             }
         }

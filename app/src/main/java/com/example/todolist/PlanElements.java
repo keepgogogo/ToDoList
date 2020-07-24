@@ -43,10 +43,10 @@ public class PlanElements{
     @ColumnInfo(name = "importance")
     public int importance;
 
-    @Ignore
+    @ColumnInfo(name = "weather")
     public String weather;
 
-    @Ignore
+    @ColumnInfo(name = "temperature")
     public String temperature;
 
 }

@@ -78,5 +78,20 @@ public class ListOfPlanElementsOperator {
         return new ArrayList<>(Arrays.asList(arrayOfPlan));
     }
 
+    public List<PlanElements> weatherWriteIn(List<PlanElements> elementsList)
+    {
+        int todayDate=preferences.getInt("DETAIL_DATE",0);
+        for(PlanElements elements : elementsList)
+        {
+            if(elements.date_all_in==todayDate)
+            {
+                elements.weather=preferences.getString("TodayWeather"," ");
+                elements.temperature=preferences.getString("TodayTemperature"," ");
+                elements.temperature=elements.temperature+"度";
+            }
+        }
+        return elementsList;
+    }
+
 }
 

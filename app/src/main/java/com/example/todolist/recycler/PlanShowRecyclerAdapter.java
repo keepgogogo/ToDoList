@@ -63,7 +63,7 @@ public class PlanShowRecyclerAdapter
         holder.timeTextView.setText(getItemDataFromDataBase(position,0));
         holder.importanceTextView.setText(getItemDataFromDataBase(position,1));
         holder.planDetailTextView.setText(getItemDataFromDataBase(position,2));
-
+        holder.weatherTextView.setText(getItemDataFromDataBase(position,3));
     }
 
     @Override
@@ -77,6 +77,7 @@ public class PlanShowRecyclerAdapter
         final int GET_TIME=0;
         final int GET_IMPORTANCE=1;
         final int GET_PLAN_DETAIL=2;
+        final int GET_WEATHER=3;
         StringBuilder stringBuilder=new StringBuilder();
         PlanElements elements=mDataSet[position];
         switch (statement)
@@ -103,6 +104,11 @@ public class PlanShowRecyclerAdapter
                 stringBuilder.delete(0,stringBuilder.length()+1);
                 stringBuilder.append(elements.plan);
                 break;
+            case GET_WEATHER:
+                stringBuilder.append(elements.weather);
+                stringBuilder.append("   ");
+                stringBuilder.append(elements.temperature);
+                break;
             default:
                 break;
         }
@@ -115,12 +121,14 @@ public class PlanShowRecyclerAdapter
         public TextView importanceTextView;
         public TextView timeTextView;
         public CardView cardView;
+        public TextView weatherTextView;
 
         public PlanShowRecyclerViewHolder(@NonNull View itemView) {
             super(itemView);
             cardView=itemView.findViewById(R.id.show_all_plan_recycler_card_view);
             timeTextView=itemView.findViewById(R.id.TextViewForRecyclerIn_ShowAllActivity);
             importanceTextView=itemView.findViewById(R.id.TextViewForRecyclerImportanceIn_ShowAllActivity);
+            weatherTextView=itemView.findViewById(R.id.TextViewForRecyclerWeatherIn_ShowAllActivity);
             planDetailTextView=itemView.findViewById(R.id.TextViewForRecyclerPlanDetailIn_ShowAllActivity);
         }
     }

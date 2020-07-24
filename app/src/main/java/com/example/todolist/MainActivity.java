@@ -55,6 +55,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     final static int WRITE_LOCATION=3;
     final static int WRITE_WEATHER=4;
     final static int WRITE_WEATHER_FORECAST=5;
+    final static int START_GET_WEATHER=6;
 
     private static final String TAG ="MAINACTIVITY" ;
 
@@ -76,6 +77,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         //如果是第一次打开应用，显示提示
         if (firstOrNot(preferences))promptShow();
+        else {
+            getPermission();
+            getLocation();
+        }
 
 
         getDate(handler);
@@ -121,7 +126,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int firstCheck=preferences.getInt("firstOrNot",defValue);
         boolean state=(defValue==firstCheck);
         if(state) {
-            SharedPreferences.Editor editor = getSharedPreferences("history", MODE_PRIVATE).edit();
+            SharedPreferences.Editor editor = getSharedPreferences("NormalData", MODE_PRIVATE).edit();
             editor.putInt("firstOrNot", 1);
             editor.apply();
         }
@@ -232,11 +237,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         final static int MONTH =1;
         final static int DAY =2;
         private static final String TAG =".TimeManager" ;
-        SharedPreferences.Editor preferencesEditor=null;
+        SharedPreferences.Editor preferencesEditor;
 
         void setPreferencesEditor(SharedPreferences.Editor preferencesEditor)
         {
             this.preferencesEditor=preferencesEditor;
+        }
+
+        TimeManager()
+        {
+            super();
+            preferencesEditor=getSharedPreferences("NormalData", MODE_PRIVATE).edit();
+            preferencesEditor.apply();
         }
 
         @Override
@@ -263,7 +275,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 case UPDATE_WEATHER:
                     getPermission();
                     getLocation();
-                    getWeather();
                     break;
 
                 case WRITE_LOCATION:
@@ -272,6 +283,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     preferencesEditor.putString("city",location[1]);
                     preferencesEditor.putString("district",location[2]);
                     preferencesEditor.apply();
+
+                    TimeManager handler=new TimeManager();
+                    Message message=new Message();
+                    message.what=START_GET_WEATHER;
+                    handler.sendMessage(message);
+
                     break;
 
                 case WRITE_WEATHER:
@@ -289,6 +306,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     preferencesEditor.putString("tomorrowNightTemperature",weatherForecast[3]);
                     preferencesEditor.apply();
                     break;
+                case START_GET_WEATHER:
+                    getWeather();
+                    break;
                 default:
                     break;
             }
@@ -298,6 +318,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public void getWeather()
     {
         SharedPreferences preferences=getSharedPreferences("NormalData",MODE_PRIVATE);
+
+
         WeatherSearchQuery mQuery=new WeatherSearchQuery(preferences.getString("city"," "),
                 WeatherSearchQuery.WEATHER_TYPE_LIVE);
 
@@ -310,11 +332,35 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 weather[0]=liveResult.getWeather();
                 weather[1]=liveResult.getTemperature();
 
+
+                Log.d("FORCHECK", "onWeatherLiveSearched: "+weather[0]+"   "+weather[1]);
+
                 TimeManager handler=new TimeManager();
                 Message message=new Message();
                 message.what=WRITE_WEATHER;
                 message.obj=weather;
                 handler.sendMessage(message);
+            }
+
+            @Override
+            public void onWeatherForecastSearched(LocalWeatherForecastResult localWeatherForecastResult, int i) {
+
+            }
+        });
+
+
+        mWeatherSearch.setQuery(mQuery);
+        mWeatherSearch.searchWeatherAsyn();
+
+
+
+        mQuery=new WeatherSearchQuery(preferences.getString("city"," "),
+                WeatherSearchQuery.WEATHER_TYPE_FORECAST);
+        WeatherSearch weatherSearchForForecast=new WeatherSearch(MainActivity.this);
+        weatherSearchForForecast.setOnWeatherSearchListener(new WeatherSearch.OnWeatherSearchListener() {
+            @Override
+            public void onWeatherLiveSearched(LocalWeatherLiveResult localWeatherLiveResult, int i) {
+
             }
 
             @Override
@@ -328,6 +374,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 weatherData.add(forecast.getDayTemp());
                 weatherData.add(forecast.getNightTemp());
 
+                Log.d("FORCHECK", "onWeatherForecast: "+forecast.getDayWeather()+"   "+forecast.getDayTemp());
+
                 TimeManager handler=new TimeManager();
                 Message message=new Message();
                 message.what=WRITE_WEATHER_FORECAST;
@@ -336,13 +384,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         });
 
-        mWeatherSearch.setQuery(mQuery);
-        mWeatherSearch.searchWeatherAsyn();
-
-        mQuery=new WeatherSearchQuery(preferences.getString("city"," "),
-                WeatherSearchQuery.WEATHER_TYPE_FORECAST);
-        mWeatherSearch.setQuery(mQuery);
-        mWeatherSearch.searchWeatherAsyn();
+        weatherSearchForForecast.setQuery(mQuery);
+        weatherSearchForForecast.searchWeatherAsyn();
     }
 
     public void getLocation()
@@ -390,6 +433,9 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     obj[0]=province;
                     obj[1]=city;
                     obj[2]=district;
+
+                    Log.d("FORCHECK", "onLocationChanged: "+province+"   "+city+"   "+district);
+
                     message.obj=obj;
                     message.what=WRITE_LOCATION;
                     handler.sendMessage(message);
@@ -457,6 +503,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             ActivityCompat.requestPermissions(MainActivity.this,
                     new String[]{Manifest.permission.ACCESS_LOCATION_EXTRA_COMMANDS},1);
         }
+
+        //获取日历权限
+        if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.
+                permission.WRITE_CALENDAR)!= PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.WRITE_CALENDAR},1);
+        }
+
+        //获取存储权限
+        if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.
+                permission.WRITE_EXTERNAL_STORAGE)!= PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE},1);
+        }
+
+        //获取电话权限
+        if(ContextCompat.checkSelfPermission(MainActivity.this, Manifest.
+                permission.READ_PHONE_STATE)!= PackageManager.PERMISSION_GRANTED)
+        {
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.READ_PHONE_STATE},1);
+        }
+
+
 
 
 

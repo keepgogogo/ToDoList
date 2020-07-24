@@ -2,11 +2,11 @@
   "formatVersion": 1,
   "database": {
     "version": 1,
-    "identityHash": "8fea0d1d565c9cee3ca91c98cccac654",
+    "identityHash": "8fa268be5d38e5c1a2a7cd49e77af66f",
     "entities": [
       {
         "tableName": "PlanElements",
-        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`planId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date_days` INTEGER NOT NULL, `date_year` INTEGER NOT NULL, `date_month` INTEGER NOT NULL, `date_hours` INTEGER NOT NULL, `date_minutes` INTEGER NOT NULL, `date_all_in` INTEGER NOT NULL, `plan` TEXT, `importance` INTEGER NOT NULL)",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`planId` INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, `date_days` INTEGER NOT NULL, `date_year` INTEGER NOT NULL, `date_month` INTEGER NOT NULL, `date_hours` INTEGER NOT NULL, `date_minutes` INTEGER NOT NULL, `date_all_in` INTEGER NOT NULL, `plan` TEXT, `importance` INTEGER NOT NULL, `weather` TEXT, `temperature` TEXT)",
         "fields": [
           {
             "fieldPath": "planId",
@@ -61,6 +61,18 @@
             "columnName": "importance",
             "affinity": "INTEGER",
             "notNull": true
+          },
+          {
+            "fieldPath": "weather",
+            "columnName": "weather",
+            "affinity": "TEXT",
+            "notNull": false
+          },
+          {
+            "fieldPath": "temperature",
+            "columnName": "temperature",
+            "affinity": "TEXT",
+            "notNull": false
           }
         ],
         "primaryKey": {
@@ -75,7 +87,7 @@
     ],
     "setupQueries": [
       "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
-      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"8fea0d1d565c9cee3ca91c98cccac654\")"
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, \"8fa268be5d38e5c1a2a7cd49e77af66f\")"
     ]
   }
 }
